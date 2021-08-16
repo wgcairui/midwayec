@@ -1,5 +1,6 @@
 import { Provide, Scope, ScopeEnum, Init } from "@midwayjs/decorator"
 import nedb from "nedb"
+import { join } from "path"
 import { Ec } from "../interface"
 
 @Provide()
@@ -30,7 +31,7 @@ export class Nedb {
      * @param path 数据库存放地址
      */
     @Init()
-    init(path: string = __dirname) {
+    init(path: string = join(__dirname, "../db")) {
         this.users = new nedbPromise({ filename: path + '/user.json', autoload: true })
         this.bindserials = new nedbPromise({ filename: path + "/bindserials.json", autoload: true })
         this.binddevices = new nedbPromise({ filename: path + '/binddevices.json', autoload: true })

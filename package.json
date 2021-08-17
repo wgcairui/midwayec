@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node bootstrap",
-    "dev": "vite",
+    "dev": "vite --host 192.168.1.81",
     "build": "npm run build:client && npm run build:server",
     "build:client": "tsc && vite build",
     "build:server": "mw build",
@@ -25,7 +25,9 @@
     "onoff": "^6.0.3",
     "serialport": "^9.2.0",
     "systeminformation": "^5.8.0",
-    "vue": "^3.2.2"
+    "vue": "^3.2.2",
+    "vue-router": "^4.0.11",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@midwayjs/cli": "^1.2.71",

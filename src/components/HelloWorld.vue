@@ -36,6 +36,7 @@
 
 <script lang="ts">
 import { ref, defineComponent, onMounted } from 'vue'
+import {getSerialportlist} from "../apis/lambda/setup"
 export default defineComponent({
   name: 'HelloWorld',
   props: {
@@ -47,7 +48,12 @@ export default defineComponent({
   setup: () => {
     const count = ref(0)
 
-    
+    onMounted(()=>{
+      getSerialportlist().then(el=>{
+        console.log(el);
+        
+      })
+    })
     return { count }
   }
 })

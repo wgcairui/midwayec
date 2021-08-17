@@ -2,6 +2,7 @@ import { Provide, Scope, ScopeEnum, Init } from "@midwayjs/decorator"
 import BetterSqlite3, { Database } from "better-sqlite3"
 import fs from "fs"
 import { Ec } from "../interface"
+import { join } from "path"
 
 
 interface clientresult {
@@ -22,7 +23,7 @@ export class Sqlite {
     @Init()
     async init() {
         this.dbname = 'ladisec.db'
-        this.db = new BetterSqlite3(this.dbname, { verbose: () => { } })
+        this.db = new BetterSqlite3(join(__dirname, "../db", this.dbname), { verbose: () => { } })
         /** 设备历史数据表 */
         this.colltion = "clientresultcolltions"
         try {

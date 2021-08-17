@@ -189,7 +189,7 @@ export const backData = async (name: string) => {
  * @param id 
  * @returns 
  */
-export const deleteColumns = async (id: string) => {
+export const deleteColumns = async (id?: string) => {
     const sqlite = await useInject(Sqlite)
     return id ? sqlite.delete(id) : await sqlite.init()
 }

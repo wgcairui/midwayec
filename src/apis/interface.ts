@@ -1,3 +1,4 @@
+import { MessageBoxInputData } from "element-plus/lib/el-message-box/src/message-box.type";
 import { OpenOptions } from "serialport";
 export declare namespace Ec {
     type uarts = "/dev/ttyAMA0" | "/dev/ttyAMA1" | "/dev/ttyAMA2" | "/dev/ttyAMA3" | "/dev/ttyAMA4"
@@ -65,8 +66,53 @@ export declare namespace Ec {
         serial: Ec.uarts,
         type: Uart.protocolType,
         protocol: string,
-        address: 1,
+        address: number,
         instruct: string,
         custom: boolean
+    }
+
+    // El table row
+    interface EltableRow<T = any> {
+        $index: number
+        row: T
+    }
+    type ElMessageBoxInputData = MessageBoxInputData
+    type ElMessageBoxCloseAction = MessageBoxInputData["action"]
+
+    // 串口返回数据
+    interface uartReadData<T extends string | Buffer = Buffer> {
+        code: number,
+        name?: string,
+        instructString?: string,
+        instruct: Buffer,
+        data: T,
+        timeStamp: number
+        result?: Uart.queryResultArgument[]
+    }
+
+    /**
+     * pi设备返回的状态
+     * 
+     */
+    interface PiDevInfo {
+        disk: {
+            available: number
+            size: number
+            use: number
+            used: number
+        }
+        getway: string
+        men: {
+            free: number
+            total: number
+            used: number
+        }
+        net: {
+            ip4: string
+            ip4subnet: string
+            ip6: string
+            ip6subnet: string
+            mac: string
+        }
     }
 }

@@ -1,4 +1,5 @@
 import { AxiosRequestConfig } from "axios"
+import { ServerOptions } from "socket.io"
 
 /**
  * 服务器配置
@@ -18,6 +19,14 @@ export const server = {
     io: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]
 }
 
-export const axiosConfig: AxiosRequestConfig = {
+export const axios: AxiosRequestConfig = {
     baseURL: "https://uart.ladishb.com"
+}
+
+export const socketConfig: Partial<ServerOptions> = {
+    path: "/client",
+    cors: {
+        origin: "http://192.168.1.81:7002",
+        methods: ['GET', 'POST']
+    }
 }

@@ -116,3 +116,8 @@ export declare namespace Ec {
         }
     }
 }
+
+export interface wsMessege<T = any> {
+    event: string,
+    data: T
+}

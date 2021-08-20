@@ -59,7 +59,10 @@ export const getBindDevs = async () => {
  */
 export const addMountdev = async ({ uart, type, model, pid, protocol, alias }: Ec.Mountdev) => {
     const nedb = await useInject(Nedb)
-    return await nedb.binddevices.insert({ uart, type, model, pid, protocol, alias })
+    const result = await nedb.binddevices.insert({ uart, type, model, pid, protocol, alias })
+    const ctx = await useInject(ecCtx)
+    ctx.startSerial()
+    return result
 }
 
 /**
@@ -69,7 +72,10 @@ export const addMountdev = async ({ uart, type, model, pid, protocol, alias }: E
  */
 export const delMountdev = async (id: string) => {
     const nedb = await useInject(Nedb)
-    return await nedb.binddevices.remove({ "_id": id })
+    const result = await nedb.binddevices.remove({ "_id": id })
+    const ctx = await useInject(ecCtx)
+    ctx.startSerial()
+    return result
 }
 
 /**
@@ -95,9 +101,9 @@ export const getConsoleMode = async () => {
  * @param opt 
  * @returns 
  */
-export const setConsoleMode = async (opt: { uart: Ec.uarts, stat: boolean }) => {
+export const setConsoleMode = async (uart: Ec.uarts, stat: boolean) => {
     const ctx = await useInject(ecCtx)
-    return await ctx.setConsoleMode(opt.uart, opt.stat)
+    return await ctx.setConsoleMode(uart, stat)
 }
 
 /**
@@ -191,7 +197,7 @@ export const backData = async (name: string) => {
  */
 export const deleteColumns = async (id?: string) => {
     const sqlite = await useInject(Sqlite)
-    return id ? sqlite.delete(id) : await sqlite.init()
+    return id ? sqlite.delete(id) : sqlite.inits()
 }
 
 /**
@@ -209,4 +215,13 @@ export const PiSysInfo = async () => {
 export const PiDevInfo = async () => {
     const tool = await useInject(Tool)
     return await tool.osDevs()
+}
+
+/**
+ * 联网初始化基础配置数据
+ * @returns 
+ */
+export const initSetup = async () => {
+    const ctx = await useInject(ecCtx)
+    return await ctx.initDB()
 }

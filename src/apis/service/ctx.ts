@@ -10,6 +10,7 @@ import { ProtocolParse } from "./parse"
 import { Sqlite } from "./sqlite"
 import { Ec } from "../interface"
 import { Api } from "./api"
+import { WsServer } from "./ws"
 
 interface cameraOption {
     name?: string,
@@ -53,16 +54,22 @@ export class ecCtx {
     @Inject()
     Api: Api
 
+    @Inject()
+    WsServer: WsServer
+
 
     /** 所有uart串口对象缓存 */
     serials: Map<Ec.uarts, serial>
     /** 调试模式 */
     private consoleMode: boolean
 
+    serialTimeout: any[]
+
     @Init()
     async init() {
         this.consoleMode = false
         this.serials = new Map()
+        this.serialTimeout = []
         this.Cache.start().then(async () => {
             await this.openSerialport()
             await this.startSerial()
@@ -86,9 +93,15 @@ export class ecCtx {
     }
 
     /** 启动串口设备,查询数据 */
-    private async startSerial() {
+   async startSerial() {
+
+        // 关闭所有定时查询
+        this.serialTimeout.forEach(el => {
+            clearTimeout(el)
+        })
+        //
         const bindDevs = await this.Nedb.binddevices.find({})
-        // console.log({ bindDevs, serials: this.serials });
+        // console.log({ bindDevs, serials: this.serialTimeout });
         // 开始查询所有设备指令
         bindDevs.forEach(dev => {
             this.startSerialQuery(dev, this.serials.get(dev.uart)!, this.Cache.CacheProtocol.get(dev.protocol)!)
@@ -98,39 +111,43 @@ export class ecCtx {
     /** 启动串口查询流程 */
     private async startSerialQuery(dev: Ec.Mountdev, serial: serial, protocol: Uart.protocol) {
         const { Type, instruct } = protocol
-        // console.log(`start query ${dev.pid} at ${dev.uart}`);
+        //console.log(`start query ${dev.pid} at ${dev.uart}`);
         // 如果serial是lock状态,等待unlock解锁再执行查询
         await serial.awaitUnlock()
-        // console.log(`end query ${dev.pid} at ${dev.uart}`);
+        //console.log(`end query ${dev.pid} at ${dev.uart}`);
         // 迭代所有指令,串行执行查询,并行执行会出现数据在stream中连续的,而且返回的次序和发送的次序不保证一致,数据完整性不保证,
         // 需要迭代每个字节判断数据长度和数据校验,遭遇非标协议不好处理,逻辑会很复杂,优点是效率为串行的n2
         const results: Required<Ec.uartReadData>[] = []
         for (let el of instruct) {
-            const instructString = Type === 232 ? el.name : this.Tool.Crc16modbus(dev.pid, el.name)
+            const instructString = Type === 232 ? el.name + "\r" : this.Tool.Crc16modbus(dev.pid, el.name)
             const result = await new Promise<Required<Ec.uartReadData<string | Buffer>>>(resolve => {
                 serial.write(Buffer.from(instructString, Type === 232 ? 'utf-8' : 'hex')).then(data => {
-                    resolve({ ...data, name: el.name, instructString })
+                    resolve({ ...data, name: el.name, instructString, result: [] })
                 })
             })
             if (result.code === 200) results.push(result as Required<Ec.uartReadData>)
-            // else console.log(result);
+            else console.log({ result });
 
         }
+        // console.log(results);
+
         // 给serial解锁
         serial.setlock(false)
         this.ProtocolParse.parse(results, dev.protocol).then(el => {
-            // console.log(el);
+            //console.log(el);
             if (el.length > 0) {
                 this.Sqlite.insert(dev._id!, Date.now(), el!)
-                //this.socketServer.sendDeviceData({ dev, data: el })
+                this.WsServer.sendDeviceData({ ...dev, data: el })
             }
         })
         // 间隔查询时间
-        setTimeout(() => {
+        const n = setTimeout(() => {
             // 如果是调试模式则取消继续轮询
             if (this.consoleMode) return
             this.startSerialQuery(dev, serial, protocol)
-        }, 1000)
+        }, 500)
+        const uartN = dev.uart[dev.uart.length - 1]
+        this.serialTimeout[parseInt(uartN)] = n
     }
 
     /** 联网初始化基础配置数据 */
@@ -175,25 +192,27 @@ export class ecCtx {
     async setConsoleMode(uart: Ec.uarts, stat: boolean) {
         if (this.consoleMode !== stat) return this.consoleMode
         const serial = this.serials.get(uart)!
-        if (this.consoleMode) {
-            console.log('close consoleMode...');
-            this.consoleMode = false
-            serial.serialport.removeListener('originalData', () => {
-                console.log('remove serialport listener <originalData>');
-            })
-            await this.startSerial()
-        } else {
-            console.log('start consoleMode...');
+        if (serial) {
+            if (this.consoleMode) {
+                console.log('close consoleMode...');
+                this.consoleMode = false
+                serial.serialport.removeListener('originalData', () => {
+                    console.log('remove serialport listener <originalData>');
+                })
+                await this.startSerial()
+            } else {
+                console.log('start consoleMode...');
 
-            this.consoleMode = true
-            const serials = [...this.serials.values()]
-            // 等待所有串口端口锁定空闲
-            await Promise.all(serials.map(el => el.awaitUnlock(false)))
-            // 注册监听事件
-            //this.socketServer.sendDeviceOriginalData('start consoleMode...')
-            serial.serialport.on('originalData', (buffer: Buffer) => {
-                //this.socketServer.sendDeviceOriginalData(buffer.toString('hex'))
-            })
+                this.consoleMode = true
+                const serials = [...this.serials.values()]
+                // 等待所有串口端口锁定空闲
+                await Promise.all(serials.map(el => el.awaitUnlock(false)))
+                // 注册监听事件
+                this.WsServer.sendDeviceOriginalData('start consoleMode...')
+                serial.serialport.on('originalData', (buffer: Buffer) => {
+                    this.WsServer.sendDeviceOriginalData(buffer.toString('hex'))
+                })
+            }
         }
         return this.consoleMode
     }

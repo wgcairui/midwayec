@@ -18,6 +18,7 @@
     "@midwayjs/koa": "^2.11.0",
     "better-sqlite3": "^7.4.3",
     "crc": "^3.8.0",
+    "echarts": "^4.9.0",
     "element-plus": "^1.0.2-beta.70",
     "koa-bodyparser": "^4.3.0",
     "lodash": "^4.17.21",
@@ -25,9 +26,11 @@
     "onoff": "^6.0.3",
     "serialport": "^9.2.0",
     "systeminformation": "^5.8.0",
-    "vue": "^3.2.2",
+    "v-charts": "^1.19.0",
+    "vue": "^3.2.3",
     "vue-router": "^4.0.11",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "ws": "^8.2.0"
   },
   "devDependencies": {
     "@midwayjs/cli": "^1.2.71",
@@ -41,6 +44,7 @@
     "@types/lodash": "^4.14.172",
     "@types/nedb": "^1.8.12",
     "@types/serialport": "^8.0.2",
+    "@types/ws": "^7.4.7",
     "@vitejs/plugin-vue": "^1.4.0",
     "@vue/compiler-sfc": "^3.0.5",
     "jest": "^26.6.3",

@@ -53,7 +53,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
-            @click="addMountdev"
+            @click="addMountdevs"
             type="primary"
             :disabled="!device.uart || !device.pid || p.length !== 3"
           >添加</el-button>
@@ -69,7 +69,7 @@
       <el-table-column prop="alias" label="设备别名" width="150"></el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template v-slot="row">
-          <el-button @click="delMountdev(row)" size="small" type="warning">删除</el-button>
+          <el-button @click="delMountdevs(row)" size="small" type="warning">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

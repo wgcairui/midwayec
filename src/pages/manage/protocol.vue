@@ -6,9 +6,9 @@
       <el-table-column prop="Type" label="协议类型" width="100" />
       <el-table-column label="操作" width="150">
         <template v-slot="row">
-          <nuxt-link :to="{ name: 'manage-protocolInstruct', query: { _id: row.row._id } }">
+          <router-link :to="{ name: 'protocolInstruct', query: { _id: row.row._id } }">
             <el-button size="small">查看</el-button>
-          </nuxt-link>
+          </router-link>
         </template>
       </el-table-column>
     </el-table>

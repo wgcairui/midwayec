@@ -18,6 +18,7 @@
 
           <el-button type="warning" size="small" @click="initData" :loading="initStat">初始化数据库</el-button>
           <el-button type="primary" size="small" @click="refreshData">更新信息</el-button>
+          <el-button type="info" size="small" @click="initDbSetup">初始化基础配置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -42,7 +43,7 @@
   import { Ec } from "../../apis/interface";
   import { key, State } from "../../vuex";
   import { date } from "../../util"
-  import { backData, deleteColumns, deviceHistoryCount, getBindDevs } from "../../apis/lambda/setup";
+  import { backData, deleteColumns, deviceHistoryCount, getBindDevs, initSetup } from "../../apis/lambda/setup";
   export default defineComponent({
     setup() {
 
@@ -127,6 +128,12 @@
         }
       };
 
+      const initDbSetup = () => {
+        initSetup().then(el => {
+          ElMessageBox.alert("初始化成功")
+        })
+      }
+
       const refreshData = () => FecthcountInfo()
 
       return {
@@ -140,6 +147,7 @@
         initData,
         deleteColumn,
         refreshData,
+        initDbSetup
       };
     },
   });

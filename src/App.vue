@@ -1,29 +1,246 @@
 <template>
-    
-   <div id="app">
-     aaa
-			<router-view></router-view>
-	</div>
+  <el-container id="layout-default">
+    <el-header>
+      <el-menu
+        class="el-menu-demo flex-grow-1"
+        mode="horizontal"
+        background-color="#545c64"
+        text-color="#fff"
+        active-text-color="#ffd04b"
+      >
+        <el-menu-item index="1">LADS EC</el-menu-item>
+        <el-submenu index="2">
+          <template #title>我的工作台</template>
+          <el-menu-item index="2-1">选项1</el-menu-item>
+          <el-menu-item index="2-2">选项2</el-menu-item>
+          <el-menu-item index="2-3">选项3</el-menu-item>
+          <el-submenu index="2-4">
+            <template #title>选项4</template>
+            <el-menu-item index="2-4-1">选项1</el-menu-item>
+            <el-menu-item index="2-4-2">选项2</el-menu-item>
+            <el-menu-item index="2-4-3">选项3</el-menu-item>
+          </el-submenu>
+        </el-submenu>
+        <el-menu-item index="3">消息中心</el-menu-item>
+        <el-menu-item index="4">
+          <a href="https://www.ele.me" target="_blank">订单管理</a>
+        </el-menu-item>
+      </el-menu>
+    </el-header>
+    <el-container class="main">
+      <aside>
+        <el-menu
+          default-active="1-4-1"
+          class="el-menu-vertical-demo"
+          :collapse="isCollapse"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+          router
+        >
+          <el-menu-item @click="isCollapse = !isCollapse">
+            <i class="el-icon-s-unfold"></i>
+            <template #title>收起</template>
+          </el-menu-item>
+          <el-submenu index="1">
+            <template #title>
+              <i class="el-icon-location"></i>配置
+            </template>
+            <el-menu-item-group>
+              <template #title>基础数据</template>
+              <el-menu-item index="1-1" :route="{ name: 'device' }">设备设置</el-menu-item>
+              <el-menu-item index="1-2" :route="{ name: 'serial' }">串口设置</el-menu-item>
+              <el-menu-item index="1-3" :route="{ name: 'protocol' }">协议管理</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="用户配置">
+              <el-menu-item index="1-4" :route="{ name: 'user' }">账号设置</el-menu-item>
+              <el-menu-item index="1-5" :route="{ name: 'alarm' }">告警设置</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="环控管理">
+              <el-menu-item index="1-6" :route="{ name: 'dataCount' }">数据统计</el-menu-item>
+              <el-menu-item index="1-7" :route="{ name: 'osInfo' }">系统信息</el-menu-item>
+              <el-menu-item index="1-8" :route="{ name: 'PiInfo' }">环控信息</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="调试">
+              <el-menu-item index="1-6" :route="{ name: 'console' }">调试</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <el-menu-item index="2" :route="{ name: 'ups' }">
+            <i class="el-icon-menu"></i>
+            <template #title>UPS</template>
+          </el-menu-item>
+          <el-menu-item index="3" :route="{ name: 'air' }">
+            <i class="el-icon-document"></i>
+            <template #title>空调</template>
+          </el-menu-item>
+          <el-menu-item index="4" :route="{ name: 'em' }">
+            <i class="el-icon-setting"></i>
+            <template #title>电量仪</template>
+          </el-menu-item>
+          <el-menu-item index="5" :route="{ name: 'th' }">
+            <i class="el-icon-setting"></i>
+            <template #title>温湿度</template>
+          </el-menu-item>
+          <el-menu-item index="6" :route="{ name: 'io' }">
+            <i class="el-icon-setting"></i>
+            <template #title>IO</template>
+          </el-menu-item>
+        </el-menu>
+      </aside>
+      <el-main class="h-100 overflow-auto flex-grow-1 m-auto">
+        <router-view></router-view>
+        <el-backtop></el-backtop>
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script lang="ts">
-  import { defineComponent } from 'vue'
-
+  import {
+    defineComponent,
+    onMounted,
+    reactive,
+    ref
+  } from "vue";
+  import { useStore } from "vuex";
+  import { PiDevInfo } from "./apis/lambda/setup";
+  import { key } from "./vuex";
   export default defineComponent({
-    name: 'App',
-    setup(){
+    setup() {
+      const store = useStore(key)
+      const date = new Date().toLocaleDateString();
+      const time = ref(new Date().toLocaleTimeString());
+      const accont = reactive({
+        user: "",
+        passwd: "",
+      });
 
-    }
-  })
+      const accont_login = () => {
+        const { user, passwd } = accont;
+        /* ctx.$util.MessageBox({
+          title: "登陆",
+          distinguishCancelAndClose: true,
+          message: "cceeee",
+        }); */
+      };
+
+      const isCollapse = ref(false);
+
+      const handleOpen = (key: any, keyPath: any) => {
+        console.log(key, keyPath);
+      };
+      const handleClose = (key: any, keyPath: any) => {
+        console.log(key, keyPath);
+      };
+
+      onMounted(() => {
+        setInterval(() => {
+          time.value = new Date().toLocaleTimeString();
+        }, 1000);
+      });
+
+      return { date, time, accont, accont_login, isCollapse, handleOpen, handleClose };
+    },
+  });
 </script>
 
 <style>
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
+  html {
+    font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    word-spacing: 1px;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
     -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #__nuxt,
+  #__layout,
+  #layout-default {
+    max-height: 100vh;
+  }
+
+  .main {
+    height: calc(100vh - 60px);
+  }
+
+  .nav-items {
+    width: 15%;
+    margin: 0;
+    padding: 0;
+    padding: 1rem 2rem;
+  }
+
+  .item * {
+    color: #fff;
+  }
+
+  .nav-items > li {
+    list-style: none;
+    margin: 0;
+    font-size: 1rem;
+    padding: 0.5rem;
+    word-wrap: normal;
+  }
+
+  .navbar-nav > li {
+    margin-right: 0.5rem;
+  }
+
+  .item-statu > p {
+    margin: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+  }
+
+  .button--green {
+    display: inline-block;
+    border-radius: 4px;
+    border: 1px solid #3b8070;
+    color: #3b8070;
+    text-decoration: none;
+    padding: 10px 30px;
+  }
+
+  .button--green:hover {
+    color: #fff;
+    background-color: #3b8070;
+  }
+
+  .button--grey {
+    display: inline-block;
+    border-radius: 4px;
+    border: 1px solid #35495e;
+    color: #35495e;
+    text-decoration: none;
+    padding: 10px 30px;
+    margin-left: 15px;
+  }
+
+  .button--grey:hover {
+    color: #fff;
+    background-color: #35495e;
+  }
+  .el-header {
+    padding: 0 !important;
+  }
+  .el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 200px;
+    overflow-y: auto;
+  }
+
+  aside {
+    background-color: #545c64;
   }
 </style>

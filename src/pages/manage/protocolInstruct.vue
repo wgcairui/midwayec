@@ -39,8 +39,8 @@
       const instruct = ref<Uart.protocolInstruct[]>([])
 
       onMounted(() => {
-        getProtocols(route.query._id as string).then((el) => {
-
+        getProtocols(route.query._id as string).then((el: Uart.protocol) => {
+          instruct.value = el.instruct
         });
       })
       return { instruct };

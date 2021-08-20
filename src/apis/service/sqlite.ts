@@ -23,7 +23,7 @@ export class Sqlite {
     @Init()
     async init() {
         this.dbname = 'ladisec.db'
-        this.db = new BetterSqlite3(join(__dirname, "../db", this.dbname), { verbose: () => { } })
+        this.db = new BetterSqlite3(this.dbname, { verbose: () => { } })
         /** 设备历史数据表 */
         this.colltion = "clientresultcolltions"
         try {
@@ -57,7 +57,7 @@ export class Sqlite {
     }
 
     private VACUUM() {
-        const migration = fs.readFileSync('./sql/VACUUM.sql', 'utf8')
+        const migration = fs.readFileSync(join(process.cwd(),"/src/apis",'/sql/VACUUM.sql'), 'utf8')
         return this.db.exec(migration)
     }
 

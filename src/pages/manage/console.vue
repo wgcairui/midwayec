@@ -132,7 +132,7 @@
             recvLog.value.unshift({ time: $util.Milliseconds(), str });
           }); */
         }
-        const el = await setConsoleMode({ uart: opt.serial, stat: consoleMode.value });
+        const el = await setConsoleMode(opt.serial, consoleMode.value);
         consoleMode.value = el;
         ConsoleLoading.value = false;
       };
@@ -188,7 +188,7 @@
         getBindSerials().then(el => {
           serials.value = el
         })
-        getProtocols().then((ps:Uart.protocol[]) => {
+        getProtocols().then((ps: Uart.protocol[]) => {
           const types = [...new Set(ps.map((el) => el.ProtocolType))];
           protocols.value = types.map((el) => ({
             label: el,
@@ -223,7 +223,7 @@
     },
   });
 </script>
-<style lang="scss" scoped>
+<style scoped>
   section {
     margin-bottom: 1rem;
   }

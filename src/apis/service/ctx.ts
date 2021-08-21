@@ -145,7 +145,7 @@ export class ecCtx {
             // 如果是调试模式则取消继续轮询
             if (this.consoleMode) return
             this.startSerialQuery(dev, serial, protocol)
-        }, 500)
+        }, 5000)
         const uartN = dev.uart[dev.uart.length - 1]
         this.serialTimeout[parseInt(uartN)] = n
     }
@@ -227,7 +227,7 @@ export class ecCtx {
         }
         const assign = Object.assign(opts, opt || {})
         return new Promise<caremavidResult>((resolve, reject) => {
-            const path = `${__dirname}/../assert/carema/${assign.name}.jpeg`
+            const path = `${__dirname}/../db/carema/${assign.name}.jpeg`
             const cmd = `raspistill -e jpg -q ${assign.zip ? (assign.zipRatio || 10) : 100} -v -t ${assign.timeout}000 -o ${path}`
             exec.exec(cmd, (err, out) => {
                 if (err) reject(err)
@@ -251,7 +251,7 @@ export class ecCtx {
         const assign = Object.assign(opts, opt || {})
         if (assign.timelong < 1 || assign.timelong > 60) assign.timelong = 60
         return new Promise((resolve, reject) => {
-            const path = `${__dirname}/../assert/video/${assign.name}.h264`
+            const path = `${__dirname}/../db/video/${assign.name}.h264`
             const cmd = `raspivid -o ${path} -t ${assign.timelong}000`
             exec.exec(cmd, (err, out) => {
                 if (err) reject(err)

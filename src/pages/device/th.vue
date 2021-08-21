@@ -1,7 +1,7 @@
 <template>
   <main>
-    <my-bar title="温度"></my-bar>
-
+    <my-bar title="温度" :data="chartDate.t"></my-bar>
+    <my-bar title="湿度" :data="chartDate.h" color="#67C23A"></my-bar>
     <section v-for="dev in device" :key="dev._id" class="mb-3">
       <el-card>
         <template #header>
@@ -13,7 +13,7 @@
           <el-table-column prop="name" label="参数"></el-table-column>
           <el-table-column prop="value" label="值"></el-table-column>
           <el-table-column label="操作">
-            <template v-slot="row">
+            <!-- <template v-slot="row">
               <router-link
                 :to="{
                   name: 'device-line',
@@ -22,7 +22,7 @@
               >
                 <el-button type="primary" size="small">趋势</el-button>
               </router-link>
-            </template>
+            </template>-->
           </el-table-column>
         </el-table>
       </el-card>
@@ -39,12 +39,7 @@
     components: { myBar },
     setup() {
       const store = useStore(key)
-      const device = computed(() => {
-        console.log(store.state);
-
-        const th = store.state.th;
-        return th || [];
-      });
+      const device = computed(() => store.state.th.sort((a, b) => a.pid - b.pid));
 
       const chartDate = computed(() => {
 
@@ -54,24 +49,25 @@
         if (th.length > 0) {
           th.forEach(el => {
             el.data.forEach(el2 => {
-              if (el2.name === "温度") {
-                t.push({
-                  name: el.model,
-                  value: parseInt(el2.parseValue),
-                  alarm: el2.alarm
-                })
-              } else if (el2.name === "湿度") {
-                h.push({
-                  name: el.model,
-                  value: parseInt(el2.parseValue),
-                  alarm: el2.alarm
-                })
+              switch (el2.name) {
+                case "温度":
+                  t.push({
+                    name: el.alias,
+                    value: parseFloat(el2.parseValue),
+                    alarm: el2.alarm
+                  })
+                  break;
+
+                case "湿度":
+                  h.push({
+                    name: el.alias,
+                    value: parseFloat(el2.parseValue),
+                    alarm: el2.alarm
+                  })
+                  break;
               }
-
             })
-
           })
-
         }
         return { t, h };
       });
@@ -80,3 +76,8 @@
     },
   });
 </script>
+<style scoped>
+  .el-card {
+    margin: 1rem 0;
+  }
+</style>

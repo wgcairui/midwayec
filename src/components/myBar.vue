@@ -1,18 +1,26 @@
 <template>
-  <div id="charts" class="chart"></div>
+  <div :id="'charts'+r" class="chart"></div>
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, PropType, watchEffect, reactive } from "vue"
-  import { init, use } from "echarts/core"
+  import { defineComponent, onMounted, PropType, watchEffect, reactive, ref, toRaw, watch } from "vue"
+  import { EChartsType, init, use } from "echarts/core"
   import { BarChart, BarSeriesOption } from "echarts/charts"
   import { GridComponent, AxisPointerComponentOption } from "echarts/components"
   import { barData, echartsOption } from "../interface"
   use([BarChart, GridComponent]);
-  
+
   export default defineComponent({
     props: {
       title: {
+        type: String,
+        default: ''
+      },
+      color: {
+        type: String,
+        default: '#409EFF'
+      },
+      unit: {
         type: String,
         default: ''
       },
@@ -22,10 +30,17 @@
       }
     },
     setup(props, ctx) {
+      const r = Math.random() * 1000
       const opt = reactive<echartsOption<BarSeriesOption | AxisPointerComponentOption>>({
         title: {
           text: props.title,
           left: "center"
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: 'cross'
+          }
         },
 
         series: [{
@@ -41,6 +56,7 @@
             show: true,
             position: "top"
           },
+          color: props.color
 
         }],
         xAxis: [{
@@ -49,28 +65,42 @@
         }],
         yAxis: {
           type: 'value',
+          name: props.title,
+          position: 'left',
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color: props.color
+            }
+          },
+          axisLabel: {
+            formatter: '{value} ' + (props.unit || '')
+          }
         },
       })
 
-      watchEffect(() => {
-        const data = props.data
-        opt.xAxis[0].data = data.map(el => el.name)
-        opt.series[0].data = data.map(el => {
-          return el.alarm ? {
-            value: el.value,
-            itemStyle: {
-              color: "red"
-            }
-          } : el.value
-        })
+      let chart: EChartsType | null = null
+
+      watch(props, ({ data }) => {
+        if (data && chart) {
+          opt.xAxis[0].data = data.map(el => el.name)
+          opt.series[0].data = data.map(el => {
+            return el.alarm ? {
+              value: el.value,
+              itemStyle: {
+                color: "#E6A23C"
+              }
+            } : el.value
+          })
+          chart.setOption(opt)
+        }
       })
-
-
 
       onMounted(() => {
-        const chart = init(document.getElementById("charts"))
-        chart.setOption(opt)
+        chart = init(document.getElementById("charts" + r))
       })
+
+      return { r }
     }
   });
 </script>

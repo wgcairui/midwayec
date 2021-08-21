@@ -15,6 +15,8 @@ ws.onopen = function () {
         const received_msg = evt.data;
         if (/(^\{.*\}$|^\[.*\]$)/.test(received_msg)) {
             const { event, data } = JSON.parse(received_msg) as wsMessege
+            // console.log({event,...data});
+            
             // 注册action
             actionsEvent.forEach(el => {
                 if (el === event) {

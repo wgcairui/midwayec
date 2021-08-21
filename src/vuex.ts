@@ -5,7 +5,7 @@ import { Ec } from "./apis/interface"
 
 export interface State {
     originalData: { time: Date, str: string }[],
-    th: Partial<Ec.DeviceData>[],
+    th: Ec.DeviceData[],
     PiDevInfo: Partial<Ec.PiDevInfo>,
     unitCache: Map<string, Map<string, string>>
 }

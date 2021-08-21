@@ -40,7 +40,7 @@ export class serial {
             this.serialport.emit('recvData', buffer)
         })
         //
-        this.AMASet = new Set(['/dev/ttyAMA1', '/dev/ttyAMA0'])
+        this.AMASet = new Set(['/dev/ttyAMA1'])
         this.lock = false
     }
     /** 打开serialport端口,默认初始化打开 */
@@ -95,8 +95,8 @@ export class serial {
                     // resolve(buffer)
                     // console.log({ code: 200, timeStamp: Date.now(), instruct: data, data: this.AMASet.has(this.serialport.path) ? buffer.slice(data.length) : buffer, buffer });
 
-                    // resolve({ code: 200, timeStamp: Date.now(), instruct: data, data: this.AMASet.has(this.serialport.path) ? buffer.slice(data.length) : buffer })
-                    resolve({ code: 200, timeStamp: Date.now(), instruct: data, data: buffer })
+                    resolve({ code: 200, timeStamp: Date.now(), instruct: data, data: this.AMASet.has(this.serialport.path) ? buffer.slice(data.length) : buffer })
+                    //resolve({ code: 200, timeStamp: Date.now(), instruct: data, data: buffer })
 
                 } else resolve({ ...buffer, instruct: data, timeStamp: Date.now() })
             })

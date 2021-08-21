@@ -26,8 +26,6 @@ ws.onopen = function () {
             mutationsEvent.forEach(el => {
                 if (el === event) {
                     store.commit('SOCKET_' + event, data)
-                    console.log(data);
-                    
                 }
             })
         }

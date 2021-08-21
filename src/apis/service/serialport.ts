@@ -93,7 +93,11 @@ export class serial {
                 // 如果端口是ttyAMA1,返回结果会包含发送的数据，需要先清除
                 if (Buffer.isBuffer(buffer)) {
                     // resolve(buffer)
-                    resolve({ code: 200, timeStamp: Date.now(), instruct: data, data: this.AMASet.has(this.serialport.path) ? buffer.slice(data.length) : buffer })
+                    // console.log({ code: 200, timeStamp: Date.now(), instruct: data, data: this.AMASet.has(this.serialport.path) ? buffer.slice(data.length) : buffer, buffer });
+
+                    // resolve({ code: 200, timeStamp: Date.now(), instruct: data, data: this.AMASet.has(this.serialport.path) ? buffer.slice(data.length) : buffer })
+                    resolve({ code: 200, timeStamp: Date.now(), instruct: data, data: buffer })
+
                 } else resolve({ ...buffer, instruct: data, timeStamp: Date.now() })
             })
             // 设置设备地址busy

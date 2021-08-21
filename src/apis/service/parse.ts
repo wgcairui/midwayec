@@ -99,8 +99,8 @@ export class ProtocolParse {
       // console.log({ cont:el.content,parseStr, parseStrlen: parseStr.length, ins: instructs.formResize.length });
       return instructs.formResize.map<Uart.queryResultArgument>(el2 => {
         const [start] = this.getProtocolRegx(el2.regx!)
-        const value = parseStr[start - 1]
-        return { name: el2.name, value, parseValue: value, unit: el2.unit }
+        const value = this.Tool.ParseFunctionValue(el2.bl, parseStr[start - 1]) as string
+        return { name: el2.name, value, parseValue: el2.isState ? this.Cache.parseUnit(el2.unit!, value) : value, unit: el2.unit }
       });
     })
       .flat()
@@ -181,8 +181,7 @@ export class ProtocolParse {
             result.value = /\./.test(str) ? num.toFixed(1) : str
             break;
         }
-
-        result.parseValue = result.value
+        result.parseValue = el2.isState ? this.Cache.parseUnit(result.unit, result.value) : result.value
 
         return result
       })

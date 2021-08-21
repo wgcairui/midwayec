@@ -1,22 +1,15 @@
 <template>
-  <ve-line
-    :data="data"
-    :mark-line="markLine"
-    :mark-point="markPoint"
-    :extend="extend"
-    :data-zoom="{ type: 'slider', start: 0 }"
-  ></ve-line>
+  <div id="charts" class="chart"></div>
 </template>
 
-<script>
-  import { defineComponent } from "vue"
-  import VeLine from 'v-charts/lib/line.common'
-  import "echarts/lib/component/markLine";
-  import "echarts/lib/component/markPoint";
-  import "echarts/lib/component/dataZoom";
-  import "echarts/lib/component/toolbox";
+<script lang="ts">
+  import { defineComponent, onMounted, ref } from "vue"
+  import { init, use } from "echarts/core"
+  import { BarChart, BarSeriesOption } from "echarts/charts"
+  import { GridComponent, AxisPointerComponentOption } from "echarts/components"
+  import { echartsOption } from "../interface"
+  use([BarChart, GridComponent]);
   export default defineComponent({
-    components: { VeLine },
     props: {
       data: {
         type: Object,
@@ -35,37 +28,44 @@
         },
       },
     },
-    data() {
-      const markLine = {
-        data: [
-          {
-            name: "平均线",
-            type: "average",
-          },
-        ],
-      };
-      const markPoint = {
-        data: [
-          {
-            name: "最大值",
-            type: "max",
-          },
-        ],
-      };
-      return {
-        markLine,
-        markPoint,
-        extend: {
-          "xAxis.0.axisLabel.rotate": 45,
-          /* series: {
-              label: {
-                normal: {
-                  show: true,
-                },
-              },
-            }, */
+    setup(props, ctx) {
+      const opt = ref<echartsOption<BarSeriesOption | AxisPointerComponentOption>>({
+        title: {
+          text: "温度",
+          left: "center"
         },
-      };
-    },
+
+        series: {
+          name: "th",
+          type: "bar",
+          data: [
+            ["b", 33]
+          ],
+          label: {
+            show: true,
+            position: "top"
+          },
+
+
+        },
+        xAxis: {
+          type: "category",
+          data: ['b']
+        },
+        yAxis: {
+          type: 'value',
+        },
+      })
+
+      onMounted(() => {
+        const chart = init(document.getElementById("charts"))
+        chart.setOption(opt.value)
+      })
+    }
   });
 </script>
+<style scoped>
+  .chart {
+    height: 400px;
+  }
+</style>

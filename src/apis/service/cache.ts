@@ -18,11 +18,14 @@ export class Cache {
     /** 缓存协议的常量设置,protocol=>Constant */
     CacheConstant: Map<string, Uart.ProtocolConstantThreshold>
 
+    CacheUnit: Map<string, string>
+
     @Init()
     init() {
         this.CacheProtocol = new Map();
         this.CacheDevsType = new Map();
         this.CacheConstant = new Map()
+        this.CacheUnit = new Map()
     }
     /** 更新所有缓存信息 */
     async start(): Promise<void> {
@@ -68,5 +71,25 @@ export class Cache {
             this.CacheConstant.delete(protocol)
         }
         return this
+    }
+
+    /**
+    * 
+    * @param unit 协议参数单位
+    * @val 值
+    */
+    parseUnit(unit: string, val: string) {
+        const hash = "Unit_" + unit + val
+        if (!this.CacheUnit.has(hash)) {
+            const arr = unit
+                .replace(/(\{|\}| )/g, "")
+                .split(",")
+                .map(el => el.split(":"))
+            //.map(el => ({ [el[0]]: el[1] }));
+            for (const [key, v] of arr) {
+                this.CacheUnit.set("Unit_" + unit + key, v)
+            }
+        }
+        return this.CacheUnit.get(hash)
     }
 }

@@ -1,6 +1,6 @@
 <template>
   <main>
-    <!-- <my-line-histogram :data="chartDate"></my-line-histogram> -->
+    <my-bar title="温度"></my-bar>
 
     <section v-for="dev in device" :key="dev._id" class="mb-3">
       <el-card>
@@ -27,24 +27,16 @@
         </el-table>
       </el-card>
     </section>
-
-    <!-- <el-card v-if="device" :title="device[0].alias">
-      <el-table :data="device[0].data">
-        <el-table-column prop="name" label="参数"></el-table-column>
-        <el-table-column prop="value" label="值"></el-table-column>
-        <el-table-column label="操作"></el-table-column>
-      </el-table>
-    </el-card>-->
   </main>
 </template>
 <script lang="ts">
   import { computed, defineComponent } from "vue";
   import { useStore } from "vuex";
-  import { Ec } from "../../apis/interface";
   import { key } from "../../vuex";
-  import myLineHistogram from "../../components/myLineHistogram.vue"
+  import myBar from "../../components/myBar.vue"
+  import { barData } from "../../interface";
   export default defineComponent({
-    components: { myLineHistogram },
+    components: { myBar },
     setup() {
       const store = useStore(key)
       const device = computed(() => {
@@ -55,21 +47,33 @@
       });
 
       const chartDate = computed(() => {
-        const data: Ec.chartData = {
-          columns: [],
-          rows: [],
-        };
-        /* const th = device.value;
+
+        const th = device.value;
+        const t: barData[] = []
+        const h: barData[] = []
         if (th.length > 0) {
-          const columns = ["th", ...th[0].data!.map((el) => el.name)];
-          data.columns = columns;
-          data.rows = th.map((el) => ({
-            [columns[0]]: el.alias,
-            [columns[1]]: el.data?.find((el) => el.name === columns[1])?.value,
-            [columns[2]]: el.data?.find((el) => el.name === columns[2])?.value,
-          }));
-        } */
-        return data;
+          th.forEach(el => {
+            el.data.forEach(el2 => {
+              if (el2.name === "温度") {
+                t.push({
+                  name: el.model,
+                  value: parseInt(el2.parseValue),
+                  alarm: el2.alarm
+                })
+              } else if (el2.name === "湿度") {
+                h.push({
+                  name: el.model,
+                  value: parseInt(el2.parseValue),
+                  alarm: el2.alarm
+                })
+              }
+
+            })
+
+          })
+
+        }
+        return { t, h };
       });
 
       return { device, chartDate };

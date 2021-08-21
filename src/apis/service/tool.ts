@@ -116,6 +116,23 @@ export class Tool {
             return Fun(val) as number
         }
     }
+
+    /**
+     * 根据系数转换值
+     * @param fun 代码文本
+     * @param val 值
+     * @returns 解析后的实际值
+     */
+    ParseFunctionValue(fun: string, val: string): string | number {
+        if (!val) return "null"
+        if (Number(fun)) return Number(val) ? Number(fun) * Number(val) : val
+        else {
+            const args = fun.replace(/(^\(|\)$)/g, '').split(',')
+            const Fun = new Function(args[0], `return ${args[1]}`)
+            return Fun(val)
+        }
+    }
+
     /**
      * 正则匹配经纬度
      * @param location 经纬地址 

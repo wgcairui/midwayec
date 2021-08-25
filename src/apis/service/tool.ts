@@ -179,4 +179,26 @@ export class Tool {
     RegexMail(mail: string) {
         return /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/.test(mail)
     }
+
+    /**
+     * 获取指定日期00:00:00
+     * @param date 
+     * @returns 
+     */
+    getTime0000(date: Date | number | string = new Date()) {
+        const d = new Date(date)
+        const t = [d.toDateString(), "00:00:00"].join(' ')
+        return new Date(t).getTime()
+    }
+
+    /**
+     * 获取指定日期23:59:59
+     * @param date 
+     * @returns 
+     */
+    getTime2359(date: Date | number | string = new Date()) {
+        const d = new Date(date)
+        const t = [d.toDateString(), "23:59:59"].join(' ')
+        return new Date(t).getTime()
+    }
 }

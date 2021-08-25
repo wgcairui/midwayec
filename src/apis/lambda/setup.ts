@@ -89,6 +89,39 @@ export const getProtocols = async (_id?: string) => {
 }
 
 /**
+ * 获取所有协议
+ * @param _id 
+ * @returns 
+ */
+export const getProtocol = async (Protocol: string) => {
+    const nedb = await useInject(Nedb)
+    return await nedb.protocols.findOne({ Protocol })
+}
+
+
+/**
+ * 获取所有协议
+ * @param _id 
+ * @returns 
+ */
+export const getProtocolSetups = async () => {
+    const nedb = await useInject(Nedb)
+    return await nedb.constants.find({})
+}
+
+/**
+ * 获取所有协议
+ * @param _id 
+ * @returns 
+ */
+export const getProtocolSetup = async (Protocol: string) => {
+    const nedb = await useInject(Nedb)
+    return await nedb.constants.findOne({ Protocol })
+}
+
+
+
+/**
  * 获取调试状态
  */
 export const getConsoleMode = async () => {

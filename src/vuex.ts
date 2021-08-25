@@ -6,6 +6,7 @@ import { Ec } from "./apis/interface"
 export interface State {
     originalData: { time: Date, str: string }[],
     th: Ec.DeviceData[],
+    ups: Ec.DeviceData[],
     PiDevInfo: Partial<Ec.PiDevInfo>,
     unitCache: Map<string, Map<string, string>>
 }
@@ -18,6 +19,7 @@ export const store = createStore<State>({
     state: {
         originalData: [],
         th: [],
+        ups: [],
         PiDevInfo: {},
         unitCache: new Map()
     },
@@ -30,16 +32,26 @@ export const store = createStore<State>({
          * @param state 
          * @param param1 
          */
-        SOCKET_DeviceData: (state, { type, alias, model, pid, protocol, _id, data }: Required<Ec.DeviceData>) => {
+        SOCKET_DeviceData: (state, { type, alias, model, pid, protocol, _id, data, uart }: Required<Ec.DeviceData>) => {
             //const {type,alias,model,pid,protocol,_id} = dev
             const idIn = idMap.get(_id)
             switch (type) {
                 case "温湿度":
                     {
                         if (!idIn && idIn !== 0) {
-                            idMap.set(_id, state.th.push({ type, alias, model, pid, protocol, _id, data }) - 1)
+                            idMap.set(_id, state.th.push({ type, alias, model, pid, protocol, _id, data, uart }) - 1)
                         } else {
                             state.th[idIn].data = data
+                        }
+                    }
+                    break
+
+                case "UPS":
+                    {
+                        if (!idIn && idIn !== 0) {
+                            idMap.set(_id, state.ups.push({ type, alias, model, pid, protocol, _id, data, uart }) - 1)
+                        } else {
+                            state.ups[idIn].data = data
                         }
                     }
                     break

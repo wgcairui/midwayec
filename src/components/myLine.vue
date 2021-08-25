@@ -1,66 +1,132 @@
 <template>
-  <div id="charts" class="chart"></div>
+  <div :id="id" class="chart"></div>
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, ref } from "vue"
-  import { init, use } from "echarts/core"
-  import { BarChart, BarSeriesOption } from "echarts/charts"
+  import { defineComponent, onMounted, PropType, reactive, watch } from "vue"
+  import { EChartsType, init, use } from "echarts/core"
+  import { LineChart, LineSeriesOption } from "echarts/charts"
   import { GridComponent, AxisPointerComponentOption } from "echarts/components"
-  import { echartsOption } from "../interface"
-  use([BarChart, GridComponent]);
+  import { barData, echartsOption } from "../interface"
+  use([LineChart, GridComponent]);
+
   export default defineComponent({
     props: {
-      data: {
-        type: Object,
-        default() {
-          return {
-            columns: ["日期", "访问用户", "下单用户", "下单率"],
-            rows: [
-              { 日期: "1/1", 访问用户: 1393, 下单用户: 1093, 下单率: 0.32 },
-              { 日期: "1/2", 访问用户: 3530, 下单用户: 3230, 下单率: 0.26 },
-              { 日期: "1/3", 访问用户: 2923, 下单用户: 2623, 下单率: 0.76 },
-              { 日期: "1/4", 访问用户: 1723, 下单用户: 1423, 下单率: 0.49 },
-              { 日期: "1/5", 访问用户: 3792, 下单用户: 3492, 下单率: 0.323 },
-              { 日期: "1/6", 访问用户: 4593, 下单用户: 4293, 下单率: 0.78 },
-            ],
-          };
-        },
+      /**
+       * 标题
+       */
+      title: {
+        type: String,
+        default: ''
       },
+      /**
+       * 线条颜色
+       */
+      color: {
+        type: String,
+        default: '#409EFF'
+      },
+      /**
+       * y轴数值单位
+       */
+      unit: {
+        type: String,
+        default: ''
+      },
+      /**
+       * 数据
+       */
+      data: {
+        type: Array as PropType<barData[]>,
+        default: [{ value: 33 }]
+      }
     },
-    setup(props, ctx) {
-      const opt = ref<echartsOption<BarSeriesOption | AxisPointerComponentOption>>({
+    setup(props) {
+      /**
+       * 图表domID
+       */
+      const id = 'charts' + Math.random() * 1000
+      /**
+       * 初始数据
+       */
+      const opt = reactive<echartsOption<LineSeriesOption | AxisPointerComponentOption>>({
         title: {
-          text: "温度",
+          text: props.title,
           left: "center"
         },
-
-        series: {
-          name: "th",
-          type: "bar",
-          data: [
-            ["b", 33]
-          ],
-          label: {
-            show: true,
-            position: "top"
-          },
-
-
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: 'cross'
+          }
         },
+
+        series: [{
+          name: props.title,
+          data: [],
+          type: 'line',
+          smooth: true,
+          color: props.color,
+          markPoint: {
+            data: [
+              {
+                type: "max",
+                name: "最大值",
+              },
+              {
+                type: "min",
+                name: "最小值"
+              },
+              {
+                type: "average",
+                name: "平均值"
+              }
+            ]
+          }
+
+        }],
         xAxis: {
-          type: "category",
-          data: ['b']
+          type: 'category',
+          data: []
         },
         yAxis: {
           type: 'value',
+          name: props.title,
+          position: 'left',
+          axisLine: {
+            show: true,
+            lineStyle: {
+              color: props.color
+            }
+          },
+          axisLabel: {
+            formatter: '{value} ' + (props.unit || '')
+          }
         },
       })
 
-      onMounted(() => {
-        const chart = init(document.getElementById("charts"))
-        chart.setOption(opt.value)
+      let chart: EChartsType | null = null
+
+      /**
+       * 当prop.data变动更新
+       */
+      watch(props, ({ data }) => {
+        if (data && chart) {
+          opt.xAxis[0].data = data.map(el => el.name)
+          opt.series[0].data = data.map(el => el.value)
+          chart.setOption(opt)
+        }
       })
+
+      /**
+       * 初始化图表
+       */
+      onMounted(() => {
+        chart = init(document.getElementById(id))
+        chart.setOption(opt)
+      })
+
+      return { id, opt }
     }
   });
 </script>

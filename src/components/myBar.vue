@@ -1,9 +1,9 @@
 <template>
-  <div :id="'charts'+r" class="chart"></div>
+  <div :id="id" class="chart"></div>
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, PropType, watchEffect, reactive, ref, toRaw, watch } from "vue"
+  import { defineComponent, onMounted, PropType, reactive, watch } from "vue"
   import { EChartsType, init, use } from "echarts/core"
   import { BarChart, BarSeriesOption } from "echarts/charts"
   import { GridComponent, AxisPointerComponentOption } from "echarts/components"
@@ -12,25 +12,48 @@
 
   export default defineComponent({
     props: {
+      /**
+       * 标题
+       */
       title: {
         type: String,
         default: ''
       },
+      /**
+       * 颜色
+       */
       color: {
         type: String,
         default: '#409EFF'
       },
+      /**
+       * Y轴单位
+       */
       unit: {
         type: String,
         default: ''
       },
+      /**
+       * 图表数据
+       */
       data: {
         type: Array as PropType<barData[]>,
         default: []
       }
     },
+    emits: {
+      /**
+       * 替换原生click事件
+       */
+      click(event: any) {
+        return event
+      }
+    },
     setup(props, ctx) {
-      const r = Math.random() * 1000
+      const id = 'charts' + Math.random() * 1000
+      /**
+       * 初始数据
+       */
       const opt = reactive<echartsOption<BarSeriesOption | AxisPointerComponentOption>>({
         title: {
           text: props.title,
@@ -44,8 +67,9 @@
         },
 
         series: [{
-          name: "th",
+          name: props.title,
           type: "bar",
+          barWidth: 30,
           data: [11, {
             value: 22,
             itemStyle: {
@@ -67,6 +91,8 @@
           type: 'value',
           name: props.title,
           position: 'left',
+          min: 0,
+          max: 100,
           axisLine: {
             show: true,
             lineStyle: {
@@ -81,6 +107,9 @@
 
       let chart: EChartsType | null = null
 
+      /**
+             * 当prop.data变动更新
+             */
       watch(props, ({ data }) => {
         if (data && chart) {
           opt.xAxis[0].data = data.map(el => el.name)
@@ -96,11 +125,17 @@
         }
       })
 
+      /**
+             * 初始化图表
+             */
       onMounted(() => {
-        chart = init(document.getElementById("charts" + r))
+        chart = init(document.getElementById(id))
+        chart.on("click", event => {
+          ctx.emit("click", event)
+        })
       })
 
-      return { r }
+      return { id, opt }
     }
   });
 </script>

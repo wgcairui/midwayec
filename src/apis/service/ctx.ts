@@ -93,7 +93,7 @@ export class ecCtx {
     }
 
     /** 启动串口设备,查询数据 */
-   async startSerial() {
+    async startSerial() {
 
         // 关闭所有定时查询
         this.serialTimeout.forEach(el => {
@@ -133,9 +133,10 @@ export class ecCtx {
 
         // 给serial解锁
         serial.setlock(false)
-        this.ProtocolParse.parse(results, dev.protocol).then(el => {
+        this.ProtocolParse.parse(results, dev.protocol).then(async el => {
             //console.log(el);
             if (el.length > 0) {
+                this.Nedb.resultSingles.update({ uart: dev.uart, pid: dev.pid }, { $set: { data: el } }, { upsert: true })
                 this.Sqlite.insert(dev._id!, Date.now(), el!)
                 this.WsServer.sendDeviceData({ ...dev, data: el })
             }

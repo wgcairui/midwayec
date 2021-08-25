@@ -1,16 +1,90 @@
 <template>
   <main>
-    <my-Bar></my-Bar>
+    <el-dialog title="1小时数据" v-model="dialogVisible" fullscreen :before-close="handleClose">
+      <my-line ref="line"></my-line>
+    </el-dialog>
+    <el-tabs>
+      <el-tab-pane v-for="dev in device" :key="dev._id" :label="dev.alias">
+        <my-ups-chart :dev="dev"></my-ups-chart>
+        <el-card>
+          <el-table :data="dev.data">
+            <el-table-column prop="name" label="参数"></el-table-column>
+            <el-table-column prop="value" label="值"></el-table-column>
+            <el-table-column label="操作">
+              <template #default="scope">
+                <el-button type="primary" size="small" @click="showModel(dev._id,scope.row.name)">趋势</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-tab-pane>
+    </el-tabs>
   </main>
 </template>
-<script lang="ts">
-  import { defineComponent } from "vue";
+<script lang="ts" setup>
+  import { LineSeriesOption, AxisPointerComponentOption, getInstanceByDom } from "echarts";
+  import { ElMessageBox } from "element-plus";
+  import { computed, ref } from "vue";
+  import { useStore } from "vuex";
+  import { clientresultcolltions } from "../../apis/lambda/history";
   import myBar from "../../components/myBar.vue"
-  export default defineComponent({
-    components: { myBar },
-    setup(props) {
+  import myLine from "../../components/myLine.vue"
+  import myUpsChart from "../../components/myUpsChart.vue"
+  import { echartsOption } from "../../interface";
+  import { key } from "../../vuex";
 
-      return {};
-    },
-  });
+  const store = useStore(key)
+
+  const device = computed(() => store.state.ups.sort((a, b) => a.pid - b.pid));
+
+  const dialogVisible = ref(false)
+
+  /**
+         * 历史信息组件实例
+         */
+  const line = ref<{ opt: echartsOption<LineSeriesOption | AxisPointerComponentOption>, id: string }>()
+
+  /**
+       * 触发显示历史数据
+       */
+  const showModel = async (id: string, name: string) => {
+    dialogVisible.value = true
+    const start = Date.now() - (36e5)
+    const data = await clientresultcolltions(id, name, start)
+    const x: string[] = []
+    const y: number[] = []
+    data.forEach(el => {
+      x.push(new Date(el.timeStamp).toTimeString().split(" ")[0])
+      y.push(parseFloat(el.data.parseValue))
+    })
+
+    if (line.value && "type" in line.value.opt.xAxis) {
+      // 组装数据
+      (line.value.opt.title as any).text = name
+      line.value.opt.xAxis.data = x
+      line.value.opt.series[0].data = y
+      line.value.opt.series[0].name = name
+      // 获取line实例
+      const chart = getInstanceByDom(document.getElementById(line.value.id))
+      chart.setOption(line.value.opt)
+      // 重新设置大小
+      chart.resize({
+        width: "auto",
+        height: "auto"
+      })
+    }
+  }
+
+  /**
+       * model关闭触发
+       */
+  const handleClose = (done: any) => {
+    ElMessageBox.confirm('确认关闭', { title: "关闭历史数据", type: "info" })
+      .then(_ => {
+        done();
+      })
+      .catch(_ => { });
+  }
+
+
 </script>

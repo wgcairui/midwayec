@@ -1,5 +1,6 @@
 import { useInject } from '@midwayjs/hooks';
 import { Sqlite } from "../service/sqlite"
+import { Tool } from "../service/tool"
 
 /**
  * 
@@ -9,9 +10,10 @@ import { Sqlite } from "../service/sqlite"
  * @param endTime 
  * @returns 
  */
-export const clientresultcolltions = async (_id: string, name: string, startTime: number, endTime: number) => {
+export const clientresultcolltions = async (_id: string, name: string, startTime?: number, endTime?: number) => {
   const sqlite = await useInject(Sqlite)
-  const clientResult = sqlite.all(_id, startTime, endTime)
+  const tool = await useInject(Tool)
+  const clientResult = sqlite.all(_id, startTime || tool.getTime0000(), endTime || tool.getTime2359())
   if (clientResult.length > 0) {
     let first = clientResult[0].result
     const result = [clientResult[0]]

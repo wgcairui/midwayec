@@ -3,6 +3,15 @@ import nedb from "nedb"
 import { join } from "path"
 import { Ec } from "../interface"
 
+type QueryMethond = "$lt" | "$lte" | "$gt" | "$gte" | "$in" | "$nin" | "$ne" | "_id"
+
+type Query<T> = { [P in keyof T]?: T[P] | Partial<Record<QueryMethond, T[P]>> | Partial<T>[] } & { _id?: string }
+
+type UpdateMethod = "$set" | "$unset" | "$inc" | "$min" | "$max" | "$push" | "$pop" | "$addToSet" | "$pull" | "$each$slice"
+
+type Update<T> = Partial<T> | Partial<Record<UpdateMethod, { [P in keyof T]?: T[P] } & { [x in string]: any }>>
+
+
 @Provide()
 @Scope(ScopeEnum.Singleton)
 export class Nedb {
@@ -21,7 +30,7 @@ export class Nedb {
     /** 设备阈值配置 */
     constants: nedbPromise<Uart.ProtocolConstantThreshold>
     /** 设备最新运行数据 */
-    resultSingles: nedbPromise
+    resultSingles: nedbPromise<Ec.SingleData>
     /** 设备型号信息 */
     devTypes: nedbPromise<Uart.DevsType>
     /** 树莓派串口信息 */
@@ -76,7 +85,7 @@ class nedbPromise<T = any> {
      * @param query 查询条件 
      * @param projection 约束
      */
-    find(query: any, projection?: any) {
+    find(query: Query<T>, projection?: Partial<Record<keyof T, 0 | 1>>) {
         return new Promise<T[]>((resolve, reject) => {
             this.db.find(query, projection, (err, docs) => {
                 if (err) reject(err)
@@ -89,7 +98,7 @@ class nedbPromise<T = any> {
      * @param query 查询条件 
      * @param projection 
      */
-    findOne(query: any, projection?: any) {
+    findOne(query: Query<T>, projection?: Partial<Record<keyof T, 0 | 1>>) {
         return new Promise<T>((resolve, reject) => {
             this.db.findOne(query, projection, (err, doc) => {
                 if (err) reject(err)
@@ -103,7 +112,7 @@ class nedbPromise<T = any> {
      * @param updateQuery 更新的数据
      * @param options 
      */
-    update(query: any, updateQuery: any, options?: Nedb.UpdateOptions) {
+    update(query: Query<T>, updateQuery: Update<T>, options: Nedb.UpdateOptions = {}) {
         return new Promise<number>((resolve, reject) => {
             this.db.update(query, updateQuery, options, (err, num) => {
                 if (err) reject(err)
@@ -128,7 +137,7 @@ class nedbPromise<T = any> {
      * 统计文档数量
      * @param query 
      */
-    count(query: any) {
+    count(query: Query<T>) {
         return new Promise<number>((resolve, reject) => {
             this.db.count(query, (err, n) => {
                 if (err) reject(err)

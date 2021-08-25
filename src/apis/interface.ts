@@ -115,6 +115,11 @@ export declare namespace Ec {
             mac: string
         }
     }
+
+    /**
+     * 单例数据格式
+     */
+    type SingleData = Mountdev & { data: Uart.queryResultArgument[], _id?: string }
 }
 
 export interface wsMessege<T = any> {

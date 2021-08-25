@@ -26,7 +26,7 @@
     "onoff": "^6.0.3",
     "serialport": "^9.2.0",
     "systeminformation": "^5.8.0",
-    "vue": "^3.2.3",
+    "vue": "^3.2.4",
     "vue-router": "^4.0.11",
     "vuex": "^4.0.2",
     "ws": "^8.2.0"

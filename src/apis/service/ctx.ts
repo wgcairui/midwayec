@@ -129,8 +129,10 @@ export class ecCtx {
             else console.log({ result });
 
         }
-        // console.log(results);
+        /* if(dev.protocol === 'P01'){
+            console.log(results.map(el => ({ [el.name]: el.data.toString(),i:el.instruct })));
 
+        } */
         // 给serial解锁
         serial.setlock(false)
         this.ProtocolParse.parse(results, dev.protocol).then(async el => {
@@ -146,7 +148,7 @@ export class ecCtx {
             // 如果是调试模式则取消继续轮询
             if (this.consoleMode) return
             this.startSerialQuery(dev, serial, protocol)
-        }, 5000)
+        }, 1000)
         const uartN = dev.uart[dev.uart.length - 1]
         this.serialTimeout[parseInt(uartN)] = n
     }

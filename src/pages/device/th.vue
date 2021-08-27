@@ -15,7 +15,7 @@
         </template>
         <el-table :data="dev.data">
           <el-table-column prop="name" label="参数"></el-table-column>
-          <el-table-column prop="value" label="值"></el-table-column>
+          <el-table-column prop="parseValue" label="值"></el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
               <el-button type="primary" size="small" @click="showModel(dev._id,scope.row.name)">趋势</el-button>

@@ -48,6 +48,7 @@ export const store = createStore<State>({
 
                 case "UPS":
                     {
+
                         if (!idIn && idIn !== 0) {
                             idMap.set(_id, state.ups.push({ type, alias, model, pid, protocol, _id, data, uart }) - 1)
                         } else {

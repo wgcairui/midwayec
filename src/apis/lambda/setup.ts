@@ -150,9 +150,10 @@ export const sendConsoleInstruct = async (opt: Ec.consoleInstruct) => {
     const serial = ctx.serials.get(opt.serial)!
     const protocol = cache.CacheProtocol.get(opt.protocol)!
     if (opt.custom) {
-        const data = await serial.write(Buffer.from(opt.instruct, protocol.Type === 232 ? 'utf-8' : 'hex'))
+        const type = protocol.Type === 232 ? 'utf-8' : 'hex'
+        const data = await serial.write(Buffer.from(opt.instruct + (protocol.Type === 232 ? '\r' : ''), type))
         if (data.code === 200) {
-            data.data = data.data.toString('hex')
+            data.data = data.data.toString(type)
         }
         return data
     } else {
@@ -162,7 +163,10 @@ export const sendConsoleInstruct = async (opt: Ec.consoleInstruct) => {
         if (protocol.Type === 232) {
             const data = await serial.write(Buffer.from(opt.instruct + '\r', 'utf-8')) as Required<Ec.uartReadData>
             // 如果code等于200,解析数据后合并结果返回
+            console.log({ data, opt });
+
             if (data.code === 200) {
+                data.name = opt.instruct
                 const result = parse.parse([data], opt.protocol)
                 return Object.assign(data, { data: data.data.toString('utf-8'), result })
             } else return data

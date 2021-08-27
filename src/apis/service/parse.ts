@@ -87,22 +87,35 @@ export class ProtocolParse {
    */
   private parse232(IntructResult: Required<Ec.uartReadData>[], protocol: string) {
     const InstructMap = this.getProtocolInstruct(protocol)
-    return IntructResult.map(el => {
-      // 解析规则
-      const instructs = InstructMap.get(el.name)!
-      // 把buffer转换为utf8字符串并掐头去尾
-      const parseStr = Buffer.from(el.data)
-        .toString("utf8", instructs.shift ? instructs.shiftNum : 0, instructs.pop ? el.data.length - instructs.popNum : el.data.length)
-        .replace(/(#)/g, "")
-        // 如果是utf8,分隔符为' '
-        .split(instructs.isSplit ? " " : "");
-      // console.log({ cont:el.content,parseStr, parseStrlen: parseStr.length, ins: instructs.formResize.length });
-      return instructs.formResize.map<Uart.queryResultArgument>(el2 => {
-        const [start] = this.getProtocolRegx(el2.regx!)
-        const value = this.Tool.ParseFunctionValue(el2.bl, parseStr[start - 1]) as string
-        return { name: el2.name, value, parseValue: el2.isState ? this.Cache.parseUnit(el2.unit!, value) : value, unit: el2.unit }
-      });
-    })
+    return IntructResult
+      .map(el => {
+        // 解析规则
+        const instructs = InstructMap.get(el.name)!
+        // 把buffer转换为utf8字符串并掐头去尾
+        const parseStr = Buffer.from(el.data)
+          .toString("utf8", instructs.shift ? instructs.shiftNum : 0, instructs.pop ? el.data.length - instructs.popNum : el.data.length)
+          .replace(/(#)/g, "")
+          // 如果是utf8,分隔符为' '
+          .split(instructs.isSplit ? " " : "");
+        const ns = instructs.formResize.map(el2 => el2.regx).map(el3 => parseInt(el3.split("-")[0]))
+        const max = Math.max(...ns)
+        /* console.log({
+          max,
+          l: parseStr.length,
+          d: parseStr,
+          name: el.name
+        }); */
+        return { state: max <= parseStr.length, instructs, parseStr }
+
+      })
+      //.filter(el => el.state)
+      .map(({ state, instructs, parseStr }) => {
+        return instructs.formResize.map<Uart.queryResultArgument>(el2 => {
+          const [start] = this.getProtocolRegx(el2.regx!)
+          const value = state ? this.Tool.ParseFunctionValue(el2.bl, parseStr[start - 1]) as string : ''
+          return { name: el2.name, value, parseValue: el2.isState ? this.Cache.parseUnit(el2.unit!, value) : value, unit: el2.unit }
+        });
+      })
       .flat()
   }
 

@@ -55,6 +55,16 @@ export const getBindDevs = async () => {
 }
 
 /**
+ * 获取所有绑定设备
+ * @param uart
+ * @returns 
+ */
+export const getBindDev = async (uart: Ec.uarts) => {
+    const nedb = await useInject(Nedb)
+    return await nedb.binddevices.findOne({ uart })
+}
+
+/**
  * 添加绑定设备
  */
 export const addMountdev = async ({ uart, type, model, pid, protocol, alias }: Ec.Mountdev) => {
@@ -89,7 +99,7 @@ export const getProtocols = async (_id?: string) => {
 }
 
 /**
- * 获取所有协议
+ * 获取指定协议
  * @param _id 
  * @returns 
  */

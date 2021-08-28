@@ -12,7 +12,12 @@
             <el-table-column prop="parseValue" label="值"></el-table-column>
             <el-table-column label="操作">
               <template #default="scope">
-                <el-button type="primary" size="small" @click="showModel(dev._id,scope.row.name)">趋势</el-button>
+                <el-button
+                  v-if="!/^{/.test(scope.row.unit)"
+                  type="text"
+                  size="small"
+                  @click="showModel(dev._id,scope.row.name)"
+                >趋势</el-button>
               </template>
             </el-table-column>
           </el-table>

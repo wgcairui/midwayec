@@ -156,22 +156,22 @@
         });
         sendLog.value.unshift({ time: Milliseconds(), str: instruct });
         const data = await sendConsoleInstruct(opts);
-        console.log(data);
-
         if (data.code === 200) {
           // 如果是使用已经配置好的指令来查询,把care[1]的协议unit替换为查询的值
           if (!custom) {
             const { result, name } = data;
             const resultMap = new Map(result?.map((el) => [el.name, el]));
+            console.log({ care, result, name });
+
             care.value[1].instruct
               .find((el) => el.name === name)
               ?.formResize.forEach((el) => {
                 const value = resultMap.get(el.name);
-                /* if (value) {
+                if (value) {
                   el.unit = el.isState
-                    ? $util.getUnit(value).parseValue
-                    : value.value + value.unit;
-                } */
+                    ? value.parseValue
+                    : value.parseValue + value.unit;
+                }
               });
           } else ElMessageBox.confirm(`返回buffer:${data.data}`, "查询成功");
         } else ElMessageBox.confirm(`查询失败:${data.data}`, "查询失败");

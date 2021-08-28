@@ -7,3 +7,4 @@ build
 src/apis/db/*.json
 *.db
 *.db*
+nohup.out

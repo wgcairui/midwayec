@@ -50,4 +50,5 @@ export const wsSend = (event: string, data: any) => {
 ws.onclose = function () {
     // 关闭 websocket
     console.log("连接已关闭...");
+    window.location.reload()
 };

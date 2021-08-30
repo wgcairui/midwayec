@@ -12,77 +12,99 @@
       </my-form>
     </b-form-group>-->
     <el-form inline>
-      <el-form-item label="日期:">
-        <el-date-picker v-model="time.date"></el-date-picker>
-      </el-form-item>
       <el-form-item label="时间范围:">
-        <el-time-picker is-range v-model="time.time"></el-time-picker>
+        <el-date-picker
+          v-model="time"
+          type="datetimerange"
+          :shortcuts="shortcuts"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
     </el-form>
-    <my-line :data="chartData"></my-line>
+    <my-line ref="line"></my-line>
   </main>
 </template>
-<script lang="ts">
-  import { defineComponent, reactive, ref, watch } from "vue";
-  import { useRoute } from "vue-router";
-  import { Ec } from "../../apis/interface";
+<script lang="ts" setup>
+  import { LineSeriesOption, AxisPointerComponentOption, getInstanceByDom } from "echarts";
+  import { onMounted, reactive, ref, watch } from "vue";
+  import { useRoute, useRouter } from "vue-router";
   import { clientresultcolltions } from "../../apis/lambda/history";
-  import { getBindDevs } from "../../apis/lambda/setup";
   import myLine from "../../components/myLine.vue"
-  import { Milliseconds } from "../../util";
-  export default defineComponent({
-    components: { myLine },
-    setup() {
-      const route = useRoute()
-      const Dates = new Date();
-      const time = reactive({
-        date: new Date(),
-        time: [
-          new Date(
-            Dates.getFullYear(),
-            Dates.getMonth(),
-            Dates.getDay(),
-            Dates.getHours() - 2,
-            Dates.getMinutes()
-          ),
-          new Date(
-            Dates.getFullYear(),
-            Dates.getMonth(),
-            Dates.getDay(),
-            Dates.getHours(),
-            Dates.getMinutes()
-          ),
-        ],
-      });
+  import { echartsOption } from "../../interface";
 
-      const { devid, name } = route.query.value as any;
-      const chartData = ref<Ec.chartData>({ columns: ["time", name], rows: [] });
-      const FecthLine = async () => {
-        const {
-          time: [start, end],
-        } = time;
+  const route = useRoute()
+  const { id, name } = route.query as any as Record<string, string>;
+  if (!id || !name) useRouter().back()
 
-        const result = await clientresultcolltions(
-          devid,
-          name,
-          new Date(start).getTime(),
-          new Date(end).getTime()
-        );
-        chartData.value.rows = result
-          .reduce(
-            (pre, cur) => {
-              if (pre[pre.length - 1].data.value !== cur.data.value) pre.push(cur);
-              return pre;
-            },
-            [result[0]]
-          )
-          .map((el) => ({
-            time: Milliseconds(el.timeStamp),
-            [name]: el.data.value,
-          }));
-      }
-      watch(time, () => FecthLine());
-      return { time, chartData };
-    },
-  });
+  const Dates = new Date();
+  const ends = new Date()
+  Dates.setHours(Dates.getHours() - 2)
+  const time = ref([Dates, ends]);
+
+  const shortcuts = [{
+    text: '最近一周',
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+      return [start, end]
+    }
+  }, {
+    text: '最近一个月',
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+      return [start, end]
+    }
+  }, {
+    text: '最近三个月',
+    value: () => {
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+      return [start, end]
+    }
+  }]
+
+  /**
+       * 历史信息组件实例
+       */
+  const line = ref<{ opt: echartsOption<LineSeriesOption | AxisPointerComponentOption>, id: string }>()
+
+
+  const FecthLine = async () => {
+    const [start, end] = time.value
+    console.log(new Date(start).toLocaleString(), new Date(end).toLocaleString());
+
+    const data = await clientresultcolltions(id, name, new Date(start).getTime(), new Date(end).getTime())
+    const x: string[] = []
+    const y: number[] = []
+    data.forEach(el => {
+      x.push(new Date(el.timeStamp).toTimeString().split(" ")[0])
+      y.push(parseFloat(el.data.parseValue))
+    })
+
+    if (line.value && "type" in line.value.opt.xAxis) {
+      // 组装数据
+      (line.value.opt.title as any).text = name
+      line.value.opt.xAxis.data = x
+      line.value.opt.series[0].data = y
+      line.value.opt.series[0].name = name
+      // 获取line实例
+      const chart = getInstanceByDom(document.getElementById(line.value.id))
+      chart.setOption(line.value.opt)
+      // 重新设置大小
+      chart.resize({
+        width: "auto",
+        height: "auto"
+      })
+    }
+
+
+  }
+  const update = () => FecthLine()
+  onMounted(() => FecthLine())
 </script>

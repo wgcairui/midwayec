@@ -7,6 +7,7 @@ import { Nedb } from "../service/nedb"
 import { ProtocolParse } from "../service/parse"
 import { Sqlite } from "../service/sqlite"
 import { Tool } from "../service/tool"
+import * as fs from "fs"
 
 /**
  * 获取所有串口列表

@@ -11,6 +11,7 @@ import { Sqlite } from "./sqlite"
 import { cameraOption, caremavidResult, Ec, serverConfig, videoOption } from "../interface"
 import { Api } from "./api"
 import { WsServer } from "./ws"
+import { join } from "path"
 
 
 /** server集中总线,挂载后台需要的数据库,工具,缓存,socket */
@@ -140,7 +141,7 @@ export class ecCtx {
                  */
                 const n = this.resultSaveInterNMap.get(dev._id)
                 if (n && Number.isInteger(n / this.serverConfig.resultSaveInterNum)) {
-                    this.Sqlite.insert(dev._id!, Date.now(), el.filter(els=>els.value))
+                    this.Sqlite.insert(dev._id!, Date.now(), el.filter(els => els.value))
                 }
                 this.resultSaveInterNMap.set(dev._id, (n || 0) + 1)
 
@@ -233,8 +234,8 @@ export class ecCtx {
         }
         const assign = Object.assign(opts, opt || {})
         return new Promise<caremavidResult>((resolve, reject) => {
-            const path = `${__dirname}/../db/carema/${assign.name}.jpeg`
-            const cmd = `raspistill -e jpg -q ${assign.zip ? (assign.zipRatio || 10) : 100} -v -t ${assign.timeout}000 -o ${path}`
+            const path = `/public/${assign.name}.jpeg`
+            const cmd = `raspistill -e jpg -q ${assign.zip ? (assign.zipRatio || 10) : 100} -t ${assign.timeout}000 -o ${join(process.cwd(), path)}`
             exec.exec(cmd, (err, out) => {
                 if (err) reject(err)
                 else resolve({
@@ -257,7 +258,7 @@ export class ecCtx {
         const assign = Object.assign(opts, opt || {})
         if (assign.timelong < 1 || assign.timelong > 60) assign.timelong = 60
         return new Promise((resolve, reject) => {
-            const path = `${__dirname}/../db/video/${assign.name}.h264`
+            const path = join(process.cwd(), "/public", `/${assign.name}.h264`)
             const cmd = `raspivid -o ${path} -t ${assign.timelong}000`
             exec.exec(cmd, (err, out) => {
                 if (err) reject(err)
@@ -270,7 +271,7 @@ export class ecCtx {
                             else resolve({
                                 timeStamp: Date.now(),
                                 name: assign.name,
-                                path: newPath,
+                                path: "/public" + newPath.split('public')[1],
                                 out: o1
                             })
                         })

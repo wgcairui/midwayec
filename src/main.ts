@@ -15,8 +15,8 @@ import { TitleComponent, TooltipComponent, LegendComponent, ToolboxComponent } f
 // 注册
 use([SVGRenderer, TitleComponent, ToolboxComponent, TooltipComponent, LegendComponent])
 
-const app = createApp(App)
-app.use(router)
-app.use(store, key)
-app.use(ElementPlus)
-app.mount('#app')
+createApp(App)
+    .use(router)
+    .use(store, key)
+    .use(ElementPlus)
+    .mount('#app')

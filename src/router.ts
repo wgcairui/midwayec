@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router"
+
+const index = () => import("./pages/index.vue")
+
 const alarm = () => import("./pages/manage/alarm.vue")
 const dataCount = () => import("./pages/manage/dataCount.vue")
 const console = () => import("./pages/manage/console.vue")
@@ -28,7 +31,11 @@ const About = { template: '<div>About</div>' }
 const routes: RouteRecordRaw[] = [
     {
         path: '/',
-        component: dataCount
+        component: index,
+        name: "index",
+        meta: {
+            name: "首页"
+        }
     },
     {
         path: '/alarm',

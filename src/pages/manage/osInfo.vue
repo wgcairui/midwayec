@@ -1,6 +1,7 @@
 <template>
   <main>
     <el-card>
+      <template #header>采集器系统信息</template>
       <el-form v-if="osInfo" label-width="80px">
         <el-form-item label="distro">
           <el-tag>{{ osInfo.distro }}</el-tag>

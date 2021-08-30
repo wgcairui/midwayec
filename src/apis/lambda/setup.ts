@@ -1,6 +1,6 @@
 import { useInject, useContext } from "@midwayjs/hooks"
 import { Context } from "@midwayjs/koa"
-import { Ec } from "../interface"
+import { cameraOption, Ec, videoOption } from "../interface"
 import { Cache } from "../service/cache"
 import { ecCtx } from "../service/ctx"
 import { Nedb } from "../service/nedb"
@@ -271,4 +271,23 @@ export const PiDevInfo = async () => {
 export const initSetup = async () => {
     const ctx = await useInject(ecCtx)
     return await ctx.initDB()
+}
+
+/**
+ * 获取摄像头实时照片
+ * @returns 
+ */
+export const getCarema = async (opt?: cameraOption) => {
+    const ctx = await useInject(ecCtx)
+    return await ctx.carema(opt)
+}
+
+/**
+ * 获取最近的实时视频
+ * @param opt 
+ * @returns 
+ */
+export const getVideo = async (opt?: videoOption) => {
+    const ctx = await useInject(ecCtx)
+    return await ctx.video(opt)
 }

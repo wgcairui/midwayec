@@ -1,5 +1,42 @@
 import { MessageBoxInputData } from "element-plus/lib/el-message-box/src/message-box.type";
 import { OpenOptions } from "serialport";
+
+type uart = "AMA0" | "AMA1" | "AMA2" | "AMA3" | "AMA4"
+type io = 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27
+
+export interface serverConfig {
+    /** 云平台服务器地址 */
+    serverUrl: string
+    /** 服务器树莓派默认串口列表对象 */
+    uart: Record<uart, Ec.uarts>
+    /** 服务器树莓派默认io端 */
+    io: io[]
+    /**
+     * sql数据库-查询结果每隔n次保存
+     */
+    resultSaveInterNum: number
+}
+
+export interface cameraOption {
+    name?: string,
+    zip?: boolean,
+    zipRatio?: number
+    timeout?: number
+}
+
+export interface videoOption {
+    name?: string
+    timelong?: number
+}
+
+export interface caremavidResult {
+    timeStamp: number
+    name: string
+    path: string
+    out: string
+}
+
+
 export declare namespace Ec {
     type uarts = "/dev/ttyAMA0" | "/dev/ttyAMA1" | "/dev/ttyAMA2" | "/dev/ttyAMA3" | "/dev/ttyAMA4"
     type dis = 16 | 17 | 18 | 19 | 20 | 21

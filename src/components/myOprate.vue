@@ -43,7 +43,7 @@
           ElMessageBox.confirm(`返回buffer:${data.data}`, "查询成功");
         } else ElMessageBox.confirm(`查询失败:${data.data}`, "查询失败");
 
-        await setConsoleMode(props.uart, false);
+        await setConsoleMode(props.uart, true);
       }
 
       return { oprateInstruct }

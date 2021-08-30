@@ -1,4 +1,4 @@
-import { Provide, Scope, ScopeEnum, Init, Inject, Autoload } from "@midwayjs/decorator"
+import { Provide, Scope, ScopeEnum, Init, Inject, Autoload, Config } from "@midwayjs/decorator"
 import { list } from "serialport"
 import exec from "child_process"
 import fs from "fs"
@@ -8,28 +8,11 @@ import { Cache } from "./cache"
 import { serial } from "./serialport"
 import { ProtocolParse } from "./parse"
 import { Sqlite } from "./sqlite"
-import { Ec } from "../interface"
+import { cameraOption, caremavidResult, Ec, serverConfig, videoOption } from "../interface"
 import { Api } from "./api"
 import { WsServer } from "./ws"
 
-interface cameraOption {
-    name?: string,
-    zip?: boolean,
-    zipRatio?: number
-    timeout?: number
-}
 
-interface videoOption {
-    name?: string
-    timelong?: number
-}
-
-interface caremavidResult {
-    timeStamp: number
-    name: string
-    path: string
-    out: string
-}
 /** server集中总线,挂载后台需要的数据库,工具,缓存,socket */
 @Provide()
 @Scope(ScopeEnum.Singleton)
@@ -57,19 +40,31 @@ export class ecCtx {
     @Inject()
     WsServer: WsServer
 
+    @Config("server")
+    serverConfig: serverConfig
+
 
     /** 所有uart串口对象缓存 */
     serials: Map<Ec.uarts, serial>
     /** 调试模式 */
     private consoleMode: boolean
 
+    /**
+     * 记录定时查询数据的配置
+     */
     serialTimeout: any[]
+
+    /**
+     * 记录查询结果保存间隔,用于选择性保存查询结果
+     */
+    private resultSaveInterNMap: Map<string, number>
 
     @Init()
     async init() {
         this.consoleMode = false
         this.serials = new Map()
         this.serialTimeout = []
+        this.resultSaveInterNMap = new Map()
         this.Cache.start().then(async () => {
             await this.openSerialport()
             await this.startSerial()
@@ -94,7 +89,6 @@ export class ecCtx {
 
     /** 启动串口设备,查询数据 */
     async startSerial() {
-
         // 关闭所有定时查询
         this.serialTimeout.forEach(el => {
             clearTimeout(el)
@@ -139,8 +133,17 @@ export class ecCtx {
             //console.log(el);
             if (el.length > 0) {
                 this.Nedb.resultSingles.update({ uart: dev.uart, pid: dev.pid }, { $set: { data: el } }, { upsert: true })
-                this.Sqlite.insert(dev._id!, Date.now(), el!)
                 this.WsServer.sendDeviceData({ ...dev, data: el })
+
+                /**
+                 * 每过this.serverConfig.resultSaveInterNum次保存查询结果
+                 */
+                const n = this.resultSaveInterNMap.get(dev._id)
+                if (n && Number.isInteger(n / this.serverConfig.resultSaveInterNum)) {
+                    this.Sqlite.insert(dev._id!, Date.now(), el.filter(els=>els.value))
+                }
+                this.resultSaveInterNMap.set(dev._id, (n || 0) + 1)
+
             }
         })
         // 间隔查询时间

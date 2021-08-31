@@ -6,9 +6,9 @@
   import { defineComponent, onMounted, PropType, reactive, watch } from "vue"
   import { EChartsType, init, use } from "echarts/core"
   import { LineChart, LineSeriesOption } from "echarts/charts"
-  import { GridComponent, AxisPointerComponentOption } from "echarts/components"
+  import { GridComponent, AxisPointerComponentOption, DataZoomComponent } from "echarts/components"
   import { barData, echartsOption } from "../interface"
-  use([LineChart, GridComponent]);
+  use([LineChart, GridComponent, DataZoomComponent]);
 
   export default defineComponent({
     props: {
@@ -54,12 +54,33 @@
           text: props.title,
           left: "center"
         },
+        legend: {
+          data: [props.title]
+        },
         tooltip: {
           trigger: "axis",
           axisPointer: {
             type: 'cross'
           }
         },
+
+        dataZoom: [
+          {
+            type: 'slider',
+            show: true,
+            xAxisIndex: [0],
+            start: 0,
+            end: 100
+          },
+          {
+            type: 'slider',
+            show: true,
+            yAxisIndex: [0],
+            left: '93%',
+            startValue: 0,
+            endValue: 100
+          }
+        ],
 
         series: [{
           name: props.title,
@@ -85,10 +106,10 @@
           }
 
         }],
-        xAxis: {
+        xAxis: [{
           type: 'category',
           data: []
-        },
+        }],
         yAxis: {
           type: 'value',
           name: props.title,
@@ -113,10 +134,16 @@
       watch(props, ({ data }) => {
         if (data && chart) {
           opt.xAxis[0].data = data.map(el => el.name)
-          opt.series[0].data = data.map(el => el.value)
+          const vals = data.map(el => el.value)
+          opt.series[0].data = vals
+          const [min, max] = [Math.min(...vals), Math.max(...vals)]
+          opt.dataZoom[1].startValue = min > 100 ? min - 10 : min
+          opt.dataZoom[1].endValue = max 
           chart.setOption(opt)
         }
       })
+
+
 
       /**
        * 初始化图表

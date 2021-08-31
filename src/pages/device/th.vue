@@ -18,7 +18,7 @@
           <el-table-column prop="parseValue" label="值"></el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
-              <el-button type="primary" size="small" @click="his(dev._id,scope.row.name)">趋势</el-button>
+              <el-button type="text" size="small" @click="his(dev._id,scope.row.name)">趋势</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -27,7 +27,7 @@
   </main>
 </template>
 <script lang="ts" setup>
-  import { computed, defineComponent, ref } from "vue";
+  import { computed, ref } from "vue";
   import { useStore } from "vuex";
   import { key } from "../../vuex";
   import myBar from "../../components/myBar.vue"
@@ -113,11 +113,20 @@
   }
 
   /**
+   * 导航到历史记录查看
+   * @param id 
+   * @param name 
+   */
+  const his = (id: string, name: string) => {
+    router.push({ path: '/line', query: { id, name } })
+  }
+
+  /**
    * 绑定图表点击事件
    */
   const thShow = (event: echartsEvent) => {
     const { _id } = device.value.find(el => el.alias === event.name)
-    showModel(_id, event.seriesName)
+    his(_id, event.seriesName)
   }
 
   /**
@@ -131,9 +140,7 @@
       .catch(_ => { });
   }
 
-  const his = (id: string, name: string) => {
-    router.push({ path: '/line', query: { id, name } })
-  }
+
 
 
 

@@ -7,6 +7,8 @@ export interface State {
     originalData: { time: Date, str: string }[],
     th: Ec.DeviceData[],
     ups: Ec.DeviceData[],
+    em: Ec.DeviceData[],
+    air: Ec.DeviceData[],
     PiDevInfo: Partial<Ec.PiDevInfo>,
     unitCache: Map<string, Map<string, string>>
 }
@@ -20,6 +22,8 @@ export const store = createStore<State>({
         originalData: [],
         th: [],
         ups: [],
+        em: [],
+        air: [],
         PiDevInfo: {},
         unitCache: new Map()
     },
@@ -53,6 +57,23 @@ export const store = createStore<State>({
                         } else {
                             state.ups[idIn].data = data
                         }
+                    }
+                    break
+
+                case "电量仪":
+                    {
+                        if (!idIn && idIn !== 0) {
+                            idMap.set(_id, state.em.push({ type, alias, model, pid, protocol, _id, data, uart }) - 1)
+                        } else {
+                            state.em[idIn].data = data
+                        }
+                    }
+                    break
+
+                default:
+                    {
+                        console.log({ type, alias, model, pid, protocol, _id, data, uart });
+
                     }
                     break
             }

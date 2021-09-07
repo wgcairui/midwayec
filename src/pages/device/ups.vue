@@ -6,7 +6,11 @@
         <el-card>
           <el-table :data="dev.data">
             <el-table-column prop="name" label="参数"></el-table-column>
-            <el-table-column prop="parseValue" label="值"></el-table-column>
+            <el-table-column prop="parseValue" label="值">
+              <template
+                v-slot="scope"
+              >{{scope.row.parseValue}}{{!/^{/.test(scope.row.unit)?scope.row.unit:''}}</template>
+            </el-table-column>
             <el-table-column label="操作">
               <template #default="scope">
                 <el-button
@@ -27,7 +31,6 @@
   import { computed, ref } from "vue";
   import { useRouter } from "vue-router";
   import { useStore } from "vuex";
-  import myBar from "../../components/myBar.vue"
   import myUpsChart from "../../components/myUpsChart.vue"
   import { key } from "../../vuex";
 

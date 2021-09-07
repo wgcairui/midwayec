@@ -1,31 +1,47 @@
+
 <template>
   <main>
-    <my-line-histogram :data="device"></my-line-histogram>
-    {{ device }}
+    <el-tabs>
+      <el-tab-pane v-for="dev in device" :key="dev._id" :label="dev.alias">
+        <my-em-chart :dev="dev"></my-em-chart>
+        <el-card>
+          <el-table :data="dev.data">
+            <el-table-column prop="name" label="参数"></el-table-column>
+            <el-table-column prop="parseValue" label="值">
+              <template
+                v-slot="scope"
+              >{{scope.row.parseValue}}{{!/^{/.test(scope.row.unit)?scope.row.unit:''}}</template>
+            </el-table-column>
+            <el-table-column label="操作">
+              <template #default="scope">
+                <el-button
+                  v-if="!/^{/.test(scope.row.unit)"
+                  type="text"
+                  size="small"
+                  @click="his(dev._id,scope.row.name)"
+                >趋势</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-tab-pane>
+    </el-tabs>
   </main>
 </template>
-<script lang="ts">
-  import { computed, defineComponent } from "vue";
+<script lang="ts" setup>
+  import { computed } from "vue";
+  import { useRouter } from "vue-router";
   import { useStore } from "vuex";
-  import { Ec } from "../../apis/interface";
-  import myLineHistogram from "../../components/myLineHistogram.vue"
   import { key } from "../../vuex";
-  export default defineComponent({
-    components: { myLineHistogram },
-    setup(props) {
-      const store = useStore(key)
-      const device = computed(() => {
-        const data: Partial<Ec.DeviceData>[] = store.state.th;
-        const columns = ["th", ...data[0].data!.map((el) => el.name)];
-        const rows = data.map((el) => ({
-          [columns[0]]: el.alias,
-          [columns[1]]: el.data?.find((el) => el.name === columns[1])?.value,
-          [columns[2]]: el.data?.find((el) => el.name === columns[2])?.value,
-        }));
-        return { columns, rows };
-      });
+  import myEmChart from "../../components/myEmChart.vue"
 
-      return { device };
-    },
-  });
+  const store = useStore(key)
+  const router = useRouter()
+  const device = computed(() => store.state.em.sort((a, b) => a.pid - b.pid));
+
+  const his = (id: string, name: string) => {
+    router.push({ path: '/line', query: { id, name } })
+  }
+
+
 </script>

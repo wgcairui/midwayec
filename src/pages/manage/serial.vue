@@ -35,8 +35,8 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <el-table :data="BindSerials">
-      <el-table-column prop="serialport" label="serial"></el-table-column>
+    <el-table :data="BindSerials" :default-sort="{prop:'serialport'}">
+      <el-table-column prop="serialport" label="serial" :formatter="uartFormat"></el-table-column>
       <el-table-column prop="autoOpen" label="自动开启"></el-table-column>
       <el-table-column prop="baudRate" label="波特率"></el-table-column>
       <el-table-column prop="dataBits" label="数据位"></el-table-column>
@@ -54,9 +54,11 @@
   } from "vue";
   import { Ec } from "../../apis/interface";
   import { addSerialport, getBindSerials, getSerialportlist } from "../../apis/lambda/setup";
-
+  import { uarts } from "../../universalData"
   export default defineComponent({
     setup() {
+      const uartMaps = new Map(uarts.map(el => [el.value, el.text]))
+
       const serial = reactive<Ec.BindSerial & { interval: number }>({
         serialport: "/dev/ttyAMA0",
         autoOpen: true,
@@ -112,7 +114,9 @@
         addSerialport({ ...serial }).then(() => fecthBindSerials());
       };
 
-      return { serial, selects, serialports, BindSerials, addSerialports };
+      const uartFormat = (row: Ec.BindSerial) => uartMaps.get(row.serialport)
+
+      return { serial, selects, serialports, BindSerials, addSerialports, uartFormat };
     },
   });
 </script>

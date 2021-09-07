@@ -60,12 +60,17 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <el-table :data="bindDevs">
+    <el-table :data="bindDevs" :default-sort="{prop: 'uart'}">
       <el-table-column prop="type" label="设备类型" width="150"></el-table-column>
       <el-table-column prop="model" label="设备型号" width="200"></el-table-column>
       <el-table-column prop="pid" label="pid" width="50"></el-table-column>
       <el-table-column prop="protocol" label="协议"></el-table-column>
-      <el-table-column prop="uart" label="串口" width="120"></el-table-column>
+      <el-table-column
+        prop="uart"
+        label="串口"
+        width="120"
+        :formatter="uartFormat"
+      ></el-table-column>
       <el-table-column prop="alias" label="设备别名" width="150"></el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template v-slot="row">
@@ -87,30 +92,10 @@
   } from "vue";
   import { Ec } from "../../apis/interface";
   import { addMountdev, delMountdev, getBindDevs, getDevices } from "../../apis/lambda/setup";
+  import { uarts } from "../../universalData"
   export default defineComponent({
     setup() {
-      const uarts = [
-        {
-          value: "/dev/ttyAMA0",
-          text: "Com1",
-        },
-        {
-          value: "/dev/ttyAMA1",
-          text: "Com2",
-        },
-        {
-          value: "/dev/ttyAMA2",
-          text: "Com3",
-        },
-        {
-          value: "/dev/ttyAMA3",
-          text: "Com4",
-        },
-        {
-          value: "/dev/ttyAMA4",
-          text: "Com5",
-        },
-      ];
+      const uartMaps = new Map(uarts.map(el => [el.value, el.text]))
       const device = reactive<Ec.Mountdev>({
         uart: "/dev/ttyAMA0",
         type: "UPS",
@@ -177,6 +162,8 @@
         });
       })
 
+      const uartFormat = (row: Ec.Mountdev) => uartMaps.get(row.uart)
+
       return {
         uarts,
         device,
@@ -185,6 +172,7 @@
         delMountdevs,
         Model,
         p,
+        uartFormat
       };
     },
   });

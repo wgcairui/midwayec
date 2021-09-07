@@ -8,9 +8,34 @@
         text-color="#fff"
         active-text-color="#ffd04b"
         router
+        style="display: flex;"
       >
         <el-menu-item index="1" :route="{ name: 'index' }">LADS EC</el-menu-item>
-        <el-submenu index="2">
+        <el-submenu index="1" style="margin-left: auto">
+          <template #title>
+            <i class="el-icon-setting"></i>
+            <span>配置</span>
+          </template>
+          <el-menu-item-group>
+            <template #title>基础数据</template>
+            <el-menu-item index="1-1" :route="{ name: 'device' }">设备设置</el-menu-item>
+            <el-menu-item index="1-2" :route="{ name: 'serial' }">串口设置</el-menu-item>
+            <el-menu-item index="1-3" :route="{ name: 'protocol' }">协议管理</el-menu-item>
+          </el-menu-item-group>
+          <el-menu-item-group title="用户配置">
+            <el-menu-item index="1-4" :route="{ name: 'user' }">账号设置</el-menu-item>
+            <el-menu-item index="1-5" :route="{ name: 'alarm' }">告警设置</el-menu-item>
+          </el-menu-item-group>
+          <el-menu-item-group title="环控管理">
+            <el-menu-item index="1-6" :route="{ name: 'dataCount' }">数据统计</el-menu-item>
+            <el-menu-item index="1-7" :route="{ name: 'osInfo' }">系统信息</el-menu-item>
+            <el-menu-item index="1-8" :route="{ name: 'PiInfo' }">环控信息</el-menu-item>
+          </el-menu-item-group>
+          <el-menu-item-group title="调试">
+            <el-menu-item index="1-6" :route="{ name: 'console' }">调试</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+        <!-- <el-submenu index="2">
           <template #title>我的工作台</template>
           <el-menu-item index="2-1">选项1</el-menu-item>
           <el-menu-item index="2-2">选项2</el-menu-item>
@@ -25,7 +50,7 @@
         <el-menu-item index="3">消息中心</el-menu-item>
         <el-menu-item index="4">
           <a href="https://www.ele.me" target="_blank">订单管理</a>
-        </el-menu-item>
+        </el-menu-item> -->
       </el-menu>
     </el-header>
     <el-container class="main">
@@ -43,30 +68,7 @@
             <i class="el-icon-s-unfold"></i>
             <template #title>收起</template>
           </el-menu-item>
-          <el-submenu index="1">
-            <template #title>
-              <i class="el-icon-setting"></i>
-              <span>配置</span>
-            </template>
-            <el-menu-item-group>
-              <template #title>基础数据</template>
-              <el-menu-item index="1-1" :route="{ name: 'device' }">设备设置</el-menu-item>
-              <el-menu-item index="1-2" :route="{ name: 'serial' }">串口设置</el-menu-item>
-              <el-menu-item index="1-3" :route="{ name: 'protocol' }">协议管理</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="用户配置">
-              <el-menu-item index="1-4" :route="{ name: 'user' }">账号设置</el-menu-item>
-              <el-menu-item index="1-5" :route="{ name: 'alarm' }">告警设置</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="环控管理">
-              <el-menu-item index="1-6" :route="{ name: 'dataCount' }">数据统计</el-menu-item>
-              <el-menu-item index="1-7" :route="{ name: 'osInfo' }">系统信息</el-menu-item>
-              <el-menu-item index="1-8" :route="{ name: 'PiInfo' }">环控信息</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="调试">
-              <el-menu-item index="1-6" :route="{ name: 'console' }">调试</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
+
           <el-menu-item index="2" :route="{ name: 'ups' }">
             <i class="el-icon-menu"></i>
             <template #title>UPS</template>

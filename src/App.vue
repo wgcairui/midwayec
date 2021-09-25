@@ -19,6 +19,7 @@
           <el-menu-item-group>
             <template #title>基础数据</template>
             <el-menu-item index="1-1" :route="{ name: 'device' }">设备设置</el-menu-item>
+            <el-menu-item index="1-9" :route="{ name: 'ioManage' }">IO设置</el-menu-item>
             <el-menu-item index="1-2" :route="{ name: 'serial' }">串口设置</el-menu-item>
             <el-menu-item index="1-3" :route="{ name: 'protocol' }">协议管理</el-menu-item>
           </el-menu-item-group>

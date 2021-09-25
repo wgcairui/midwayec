@@ -11,7 +11,10 @@ import { Sqlite } from "./sqlite"
 import { cameraOption, caremavidResult, Ec, serverConfig, videoOption } from "../interface"
 import { Api } from "./api"
 import { WsServer } from "./ws"
+import { gpioNumer, IO, IOs } from "./gpio"
 import { join } from "path"
+import { ioIn, ioOut } from "../../interface"
+import { BinaryValue } from "onoff"
 
 
 /** server集中总线,挂载后台需要的数据库,工具,缓存,socket */
@@ -41,6 +44,9 @@ export class ecCtx {
     @Inject()
     WsServer: WsServer
 
+    @Inject()
+    IOs: IOs
+
     @Config("server")
     serverConfig: serverConfig
 
@@ -60,16 +66,71 @@ export class ecCtx {
      */
     private resultSaveInterNMap: Map<string, number>
 
+    /**
+     * io实例Map
+     */
+    private ioMap: Map<ioIn | ioOut, IO>
+
     @Init()
     async init() {
         this.consoleMode = false
         this.serials = new Map()
         this.serialTimeout = []
         this.resultSaveInterNMap = new Map()
+        this.ioMap = new Map()
         this.Cache.start().then(async () => {
             await this.openSerialport()
             await this.startSerial()
         })
+
+        this.initIO()
+
+        /**
+         * 间隔发送io状态
+         */
+        setInterval(async () => {
+            this.WsServer.sendIosStat(await this.getIosStat())
+        }, 1000)
+        /* 
+                this.getIo("o1").write(1).then(()=>{
+                    this.getIosStat().then(el => {
+                        console.log(el);
+            
+                    })
+                })
+         */
+
+    }
+
+    /**
+     * 初始化io
+     */
+    async initIO() {
+        const i: gpioNumer[] = [16, 17, 18, 19, 20, 21]
+        const o: gpioNumer[] = [22, 23, 24, 25, 26, 27]
+        i.forEach((val, index) => {
+            this.ioMap.set(`i${index + 1}` as ioIn, this.IOs.getIo(val, "in"))
+        })
+        o.forEach((val, index) => {
+            this.ioMap.set(`o${index + 1}` as ioOut, this.IOs.getIo(val, "out"))
+        })
+    }
+
+    /**
+     * 获取io状态
+     */
+    async getIosStat() {
+        const arr = await Promise.all([...this.ioMap.entries()].map(async ([key, val]) => ({ [key]: await val.read() })))
+        return Object.assign({}, ...arr) as Record<ioIn | ioOut, BinaryValue>
+    }
+
+    /**
+     * 获取单个io实例
+     * @param key 
+     * @returns 
+     */
+    getIo(key: ioIn | ioOut) {
+        return this.ioMap.get(key)
     }
 
     /** 根据串口配置打开所有串口 */
@@ -121,7 +182,7 @@ export class ecCtx {
                 })
             })
             if (result.code === 200) results.push(result as Required<Ec.uartReadData>)
-            else console.log({ result });
+            // else console.log({ result });
 
         }
         /* if(dev.protocol === 'P01'){

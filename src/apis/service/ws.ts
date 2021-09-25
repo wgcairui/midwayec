@@ -4,6 +4,8 @@ import { Server } from "ws"
 import { Application } from "@midwayjs/koa"
 import { Server as Http } from "http"
 import { wsMessege } from "../interface"
+import { BinaryValue } from "onoff"
+import { ioIn, ioOut } from "../../interface"
 
 
 
@@ -61,6 +63,14 @@ export class WsServer {
      */
     async sendPiDevInfo() {
         this.wsSend('PiDevInfo', await this.Tool.osDevs())
+    }
+
+    /**
+     * 发送io状态
+     * @param stats 
+     */
+    sendIosStat(stats: Record<ioIn | ioOut, BinaryValue>) {
+        this.wsSend("IosStat", stats)
     }
 
     /**

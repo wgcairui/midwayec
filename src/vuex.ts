@@ -1,6 +1,8 @@
 import { createStore, Store } from "vuex"
 import { InjectionKey } from "vue"
 import { Ec } from "./apis/interface"
+import { ioIn, ioOut } from "./interface"
+import { BinaryValue } from "onoff"
 
 
 export interface State {
@@ -10,7 +12,8 @@ export interface State {
     em: Ec.DeviceData[],
     air: Ec.DeviceData[],
     PiDevInfo: Partial<Ec.PiDevInfo>,
-    unitCache: Map<string, Map<string, string>>
+    unitCache: Map<string, Map<string, string>>,
+    ioState: Record<ioIn | ioOut, BinaryValue>
 }
 
 export const key: InjectionKey<Store<State>> = Symbol()
@@ -25,7 +28,21 @@ export const store = createStore<State>({
         em: [],
         air: [],
         PiDevInfo: {},
-        unitCache: new Map()
+        unitCache: new Map(),
+        ioState: {
+            "i1": 0,
+            "i2": 0,
+            "i3": 0,
+            "i4": 0,
+            "i5": 0,
+            "i6": 0,
+            "o1": 0,
+            "o2": 0,
+            "o3": 0,
+            "o4": 0,
+            "o5": 0,
+            "o6": 0,
+        }
     },
     getters: {
 
@@ -94,6 +111,13 @@ export const store = createStore<State>({
          */
         SOCKET_originalData: (state, data: string) => {
             state.originalData.push({ time: new Date, str: data })
+        },
+
+        /**
+         * io状态变化
+         */
+        SOCKET_IosStat: (state, data: Record<ioIn | ioOut, BinaryValue>) => {
+            state.ioState = data
         }
 
 

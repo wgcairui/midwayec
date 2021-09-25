@@ -49,3 +49,6 @@ export interface echartsEvent<T = number> {
 
     [x in string]: any
 }
+
+export type ioIn = "i1" | "i2" | "i3" | "i4" | "i5" | "i6"
+export type ioOut = "o1" | "o2" | "o3" | "o4" | "o5" | "o6"

@@ -8,6 +8,7 @@ import { ProtocolParse } from "../service/parse"
 import { Sqlite } from "../service/sqlite"
 import { Tool } from "../service/tool"
 import * as fs from "fs"
+import { ioOut } from "../../interface"
 
 /**
  * 获取所有串口列表
@@ -291,4 +292,16 @@ export const getCarema = async (opt?: cameraOption) => {
 export const getVideo = async (opt?: videoOption) => {
     const ctx = await useInject(ecCtx)
     return await ctx.video(opt)
+}
+
+/**
+ * 设置io电平状态
+ * @param key 
+ * @param val 
+ * @returns 
+ */
+export const setIoVal = async (key: ioOut, val: 0 | 1) => {
+    const ctx = await useInject(ecCtx)
+    const io = ctx.getIo(key)
+    return await io.write(val).then(()=>io.readSync())
 }

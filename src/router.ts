@@ -6,6 +6,7 @@ const alarm = () => import("./pages/manage/alarm.vue")
 const dataCount = () => import("./pages/manage/dataCount.vue")
 const console = () => import("./pages/manage/console.vue")
 const device = () => import("./pages/manage/device.vue")
+const ioManage = () => import("./pages/manage/io.vue")
 const osInfo = () => import("./pages/manage/osInfo.vue")
 const PiInfo = () => import("./pages/manage/PiInfo.vue")
 const protocol = () => import("./pages/manage/protocol.vue")
@@ -57,6 +58,14 @@ const routes: RouteRecordRaw[] = [
         name: "device",
         meta: {
             name: "设备设置"
+        }
+    },
+    {
+        path: '/ioManage',
+        component: ioManage,
+        name: "ioManage",
+        meta: {
+            name: "IO设置"
         }
     },
     {

@@ -1,5 +1,6 @@
 import { MessageBoxInputData } from "element-plus/lib/el-message-box/src/message-box.type";
 import { OpenOptions } from "serialport";
+import { ioIn, ioOut } from "../interface"
 
 type uart = "AMA0" | "AMA1" | "AMA2" | "AMA3" | "AMA4"
 type io = 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27
@@ -71,6 +72,24 @@ export declare namespace Ec {
     }
     interface BindSerial extends Required<pickSerialOptions> {
         serialport: uarts
+    }
+
+    /**
+     * io信息
+     */
+    interface ioInfo {
+        /**
+         * io
+         */
+        name: ioIn | ioOut
+        /**
+         * 别名
+         */
+        label: string
+        /**
+         * 结果是否反转
+         */
+        reverse: boolean
     }
 
     // 挂载设备

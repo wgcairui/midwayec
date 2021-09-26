@@ -8,7 +8,7 @@ import { ProtocolParse } from "../service/parse"
 import { Sqlite } from "../service/sqlite"
 import { Tool } from "../service/tool"
 import * as fs from "fs"
-import { ioOut } from "../../interface"
+import { ioIn, ioOut } from "../../interface"
 
 /**
  * 获取所有串口列表
@@ -303,5 +303,31 @@ export const getVideo = async (opt?: videoOption) => {
 export const setIoVal = async (key: ioOut, val: 0 | 1) => {
     const ctx = await useInject(ecCtx)
     const io = ctx.getIo(key)
-    return await io.write(val).then(()=>io.readSync())
+    return await io.write(val).then(() => io.readSync())
+}
+
+/**
+ * 获取Io配置
+ * @param key 
+ * @returns 
+ */
+export const getIoLabels = async (key?: ioOut | ioIn) => {
+    const db = await useInject(Nedb)
+    return await db.ios.find(key ? { name: key } : {})
+}
+
+/**
+ * 修改io名称和配置
+ * @param key 
+ * @param label 
+ * @param reverse 反转结果
+ * @returns 
+ */
+export const setIoLabel = async (key: ioOut | ioIn, label: string, reverse: boolean) => {
+    const db = await useInject(Nedb)
+    await db.ios.update({ name: key }, { $set: { label, reverse } }, { upsert: true })
+    const ctx = await useInject(ecCtx)
+    const io = ctx.getIo(key)
+    io.loadInfo(await db.ios.findOne({ name: key }))
+    return "ok"
 }

@@ -1,5 +1,6 @@
 import { Provide } from "@midwayjs/decorator"
 import { BinaryValue, Direction, Gpio, Options } from "onoff"
+import { Ec } from "../interface"
 
 export type gpioNumer = 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27
 
@@ -23,7 +24,7 @@ export class IOs {
 
 
 export class IO extends Gpio {
-
+    label: string
     constructor(gpio: gpioNumer, direction: Direction, edge: "none" | "rising" | "falling" | "both" = "none", options: Options = {}) {
         // 如果为di则开启监听模式
         if (direction === 'in') edge = 'both'
@@ -31,6 +32,16 @@ export class IO extends Gpio {
         process.on('SIGINT', () => {
             this.unexport()
         })
+        this.label = ''
+    }
+
+    /**
+     * 设置配值
+     * @returns 
+     */
+    loadInfo(info: Ec.ioInfo = { label: '', reverse: false, name: 'i1' }) {
+        this.label = info.label
+        super.setActiveLow(info.reverse)
     }
     // 不能转换为Promise,Promise获得第一次结果后就会销毁函数
     /* watch() {

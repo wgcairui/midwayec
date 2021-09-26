@@ -36,6 +36,10 @@ export class Nedb {
     /** 树莓派串口信息 */
     bindserials: nedbPromise<Ec.BindSerial>
     /**
+     * dido信息
+     */
+    ios: nedbPromise<Ec.ioInfo>
+    /**
      * 
      * @param path 数据库存放地址
      */
@@ -51,7 +55,7 @@ export class Nedb {
         this.constants = new nedbPromise({ filename: path + '/constants.json', autoload: true })
         this.resultSingles = new nedbPromise({ filename: path + '/resultSingles.json', autoload: true })
         this.devTypes = new nedbPromise({ filename: path + '/devTypes.json', autoload: true })
-
+        this.ios = new nedbPromise({ filename: path + '/ios.json', autoload: true })
     }
 }
 

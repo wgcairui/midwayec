@@ -13,7 +13,7 @@
         <el-menu-item index="1" :route="{ name: 'index' }">LADS EC</el-menu-item>
         <el-submenu index="1" style="margin-left: auto">
           <template #title>
-            <i class="el-icon-setting"></i>
+            <i class="el-icon-set-up"></i>
             <span>配置</span>
           </template>
           <el-menu-item-group>
@@ -51,7 +51,7 @@
         <el-menu-item index="3">消息中心</el-menu-item>
         <el-menu-item index="4">
           <a href="https://www.ele.me" target="_blank">订单管理</a>
-        </el-menu-item> -->
+        </el-menu-item>-->
       </el-menu>
     </el-header>
     <el-container class="main">
@@ -66,10 +66,13 @@
           router
         >
           <el-menu-item @click="isCollapse = !isCollapse">
-            <i class="el-icon-s-unfold"></i>
+            <i class="el-icon-s-fold"></i>
             <template #title>收起</template>
           </el-menu-item>
-
+          <el-menu-item index="6" :route="{ name: 'home' }">
+            <i class="el-icon-s-home"></i>
+            <template #title>状态</template>
+          </el-menu-item>
           <el-menu-item index="2" :route="{ name: 'ups' }">
             <i class="el-icon-menu"></i>
             <template #title>UPS</template>
@@ -85,10 +88,6 @@
           <el-menu-item index="5" :route="{ name: 'th' }">
             <i class="el-icon-setting"></i>
             <template #title>温湿度</template>
-          </el-menu-item>
-          <el-menu-item index="6" :route="{ name: 'io' }">
-            <i class="el-icon-setting"></i>
-            <template #title>IO</template>
           </el-menu-item>
         </el-menu>
       </aside>
@@ -241,8 +240,9 @@
     padding: 0 !important;
   }
   .el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 200px;
+    width: 150px;
     overflow-y: auto;
+    border-right: none;
   }
 
   aside {

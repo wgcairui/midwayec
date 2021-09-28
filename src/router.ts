@@ -16,7 +16,7 @@ const user = () => import("./pages/manage/user.vue")
 
 const air = () => import("./pages/device/air.vue")
 const em = () => import("./pages/device/em.vue")
-const io = () => import("./pages/device/io.vue")
+const home = () => import("./pages/device/home.vue")
 const line = () => import("./pages/device/line.vue")
 const th = () => import("./pages/device/th.vue")
 const ups = () => import("./pages/device/ups.vue")
@@ -141,11 +141,11 @@ const routes: RouteRecordRaw[] = [
         }
     },
     {
-        path: "/io",
-        name: "io",
-        component: io,
+        path: "/home",
+        name: "home",
+        component: home,
         meta: {
-            name: "IO"
+            name: "主页"
         }
     },
     {

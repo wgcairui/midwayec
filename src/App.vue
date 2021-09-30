@@ -19,21 +19,21 @@
           <el-menu-item-group>
             <template #title>基础数据</template>
             <el-menu-item index="1-1" :route="{ name: 'device' }">设备设置</el-menu-item>
-            <el-menu-item index="1-9" :route="{ name: 'ioManage' }">IO设置</el-menu-item>
-            <el-menu-item index="1-2" :route="{ name: 'serial' }">串口设置</el-menu-item>
-            <el-menu-item index="1-3" :route="{ name: 'protocol' }">协议管理</el-menu-item>
+            <el-menu-item index="1-2" :route="{ name: 'ioManage' }">IO设置</el-menu-item>
+            <el-menu-item index="1-3" :route="{ name: 'serial' }">串口设置</el-menu-item>
+            <el-menu-item index="1-4" :route="{ name: 'protocol' }">协议管理</el-menu-item>
           </el-menu-item-group>
           <el-menu-item-group title="用户配置">
-            <el-menu-item index="1-4" :route="{ name: 'user' }">账号设置</el-menu-item>
-            <el-menu-item index="1-5" :route="{ name: 'alarm' }">告警设置</el-menu-item>
+            <el-menu-item index="1-10" :route="{ name: 'user' }">账号设置</el-menu-item>
+            <el-menu-item index="1-11" :route="{ name: 'alarm' }">告警设置</el-menu-item>
+            <el-menu-item index="1-12" :route="{ name: 'alarmLinkage' }">告警联动</el-menu-item>
           </el-menu-item-group>
           <el-menu-item-group title="环控管理">
-            <el-menu-item index="1-6" :route="{ name: 'dataCount' }">数据统计</el-menu-item>
-            <el-menu-item index="1-7" :route="{ name: 'osInfo' }">系统信息</el-menu-item>
-            <el-menu-item index="1-8" :route="{ name: 'PiInfo' }">环控信息</el-menu-item>
+            <el-menu-item index="1-20" :route="{ name: 'dataCount' }">数据统计</el-menu-item>
+            <el-menu-item index="1-21" :route="{ name: 'PiInfo' }">环控信息</el-menu-item>
           </el-menu-item-group>
           <el-menu-item-group title="调试">
-            <el-menu-item index="1-6" :route="{ name: 'console' }">调试</el-menu-item>
+            <el-menu-item index="1-30" :route="{ name: 'console' }">调试</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
         <!-- <el-submenu index="2">

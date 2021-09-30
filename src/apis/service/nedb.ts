@@ -40,6 +40,10 @@ export class Nedb {
      */
     ios: nedbPromise<Ec.ioInfo>
     /**
+     * 告警联动
+     */
+    alarmLinkage: nedbPromise<Ec.alarmLinkage>
+    /**
      * 
      * @param path 数据库存放地址
      */
@@ -56,6 +60,7 @@ export class Nedb {
         this.resultSingles = new nedbPromise({ filename: path + '/resultSingles.json', autoload: true })
         this.devTypes = new nedbPromise({ filename: path + '/devTypes.json', autoload: true })
         this.ios = new nedbPromise({ filename: path + '/ios.json', autoload: true })
+        this.alarmLinkage = new nedbPromise({ filename: path + '/alarmLinkage.json', autoload: true })
     }
 }
 

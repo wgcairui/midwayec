@@ -176,6 +176,33 @@ export declare namespace Ec {
      * 单例数据格式
      */
     type SingleData = Mountdev & { data: Uart.queryResultArgument[], _id?: string }
+
+    /**
+     * 联动告警配置-条件
+     */
+    interface alarmLinkageCondition {
+        name: string[];
+        operator: string;
+        value: string;
+    }
+
+    /**
+     * 联动告警配置-执行
+     */
+    interface alarmLinkageOprate {
+        name: ioOut;
+        value: 0 | 1
+    }
+
+    /**
+     * 联动告警配置
+     */
+    interface alarmLinkage {
+        key: string
+        condition: alarmLinkageCondition
+        oprate: alarmLinkageOprate
+    }
+
 }
 
 export interface wsMessege<T = any> {

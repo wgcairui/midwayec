@@ -331,3 +331,22 @@ export const setIoLabel = async (key: ioOut | ioIn, label: string, reverse: bool
     io.loadInfo(await db.ios.findOne({ name: key }))
     return "ok"
 }
+
+/**
+ * 添加告警联动配置
+ * @param alarm 
+ */
+export const addAlarmLinkage = async ({ key, condition, oprate }: Ec.alarmLinkage) => {
+    const db = await useInject(Nedb)
+    return await db.alarmLinkage.update({ key }, { $set: { condition, oprate } }, { upsert: true })
+
+}
+
+/**
+ * 删除告警联动配置
+ * @param alarm 
+ */
+export const delAlarmLinkage = async (key: string) => {
+    const db = await useInject(Nedb)
+    return await db.alarmLinkage.remove({ key })
+}

@@ -48,12 +48,12 @@
         <el-col :span="12">
           <el-form label-suffix=":" size="small">
             <el-form-item v-for="(val,key) in ioOuts" :key="key" :label="'D'+key">
-              <el-form inline size="small">
-                <el-form-item>
+              <el-form size="small" label-width="50px" label-suffix=":">
+                <el-form-item label="状态">
                   <el-tooltip
                     class="item"
                     effect="dark"
-                    content="灰色为断开,绿色为连接"
+                    content="显示Do端口的状态"
                     placement="right-start"
                   >
                     <el-switch
@@ -61,20 +61,27 @@
                       :active-value="1"
                       :inactive-value="0"
                       active-color="#13ce66"
+                      active-text="闭合"
+                      inactive-text="断开"
                       @click="changIo(key)"
                     ></el-switch>
                   </el-tooltip>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item label="反转">
+                  <el-tooltip class="item" effect="dark" content="反转Di高低电位" placement="right-start">
+                    <el-switch v-model="labels[key].reverse" active-text="是" inactive-text="否"></el-switch>
+                  </el-tooltip>
+                </el-form-item>
+                <el-form-item label="设备">
                   <el-autocomplete
                     v-model="labels[key].label"
                     :fetch-suggestions="querySearch"
                     class="inline-input"
                     placeholder="输入io别名"
-                  />{{labels[key]}}
+                  />
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="success" round>确定</el-button>
+                  <el-button type="success" round @click="setIo(key)">确定</el-button>
                 </el-form-item>
               </el-form>
             </el-form-item>

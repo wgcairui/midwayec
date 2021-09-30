@@ -7,7 +7,7 @@ const dataCount = () => import("./pages/manage/dataCount.vue")
 const console = () => import("./pages/manage/console.vue")
 const device = () => import("./pages/manage/device.vue")
 const ioManage = () => import("./pages/manage/io.vue")
-const osInfo = () => import("./pages/manage/osInfo.vue")
+const alarmLinkage = () => import("./pages/manage/alarmLinkage.vue")
 const PiInfo = () => import("./pages/manage/PiInfo.vue")
 const protocol = () => import("./pages/manage/protocol.vue")
 const protocolInstruct = () => import("./pages/manage/protocolInstruct.vue")
@@ -93,11 +93,11 @@ const routes: RouteRecordRaw[] = [
         }
     },
     {
-        path: "/osInfo",
-        name: "osInfo",
-        component: osInfo,
+        path: "/alarmLinkage",
+        name: "alarmLinkage",
+        component: alarmLinkage,
         meta: {
-            name: "系统信息"
+            name: "告警联动"
         }
     },
     {

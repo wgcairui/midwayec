@@ -46,15 +46,14 @@
       </el-form>
     </el-card>
     <el-table :data="alarmLinkages">
-      <el-table-column prop="key" label="键" width="300"></el-table-column>
-      <el-table-column label="条件" width="400">
+      <el-table-column label="条件" width="500">
         <template #default="scope">
-          {{scope.row.condition.name.join("/")}}
+          {{scope.row.condition.name[0]+'/'+(DiNames[scope.row.condition.name[1]]||scope.row.condition.name[1])}}
           <b>{{operatorObj[scope.row.condition.operator]}}</b>
           {{scope.row.condition.value}}
         </template>
       </el-table-column>
-      <el-table-column label="执行" width="300">
+      <el-table-column label="执行" width="500">
         <template #default="scope">
           {{DoNames[scope.row.oprate.name]}}
           <b>=</b>
@@ -135,6 +134,13 @@
     return Object.assign({}, ...oprates.value.map(({ label, value }) => ({ [value]: label })))
   })
 
+  const DiNames = computed(() => {
+    const Di = conditionsOpts.value.find(el => el.value === "DI")
+    if (Di) {
+      return Object.assign({}, ...Di.children.map(({ label, value }) => ({ [value]: label })))
+    } return {}
+  })
+
   onMounted(async () => {
     conditionsOpts.value = await getAlarmLinkageConditionsOpts()
     oprates.value = await getAlarmLinkageOprates()
@@ -153,14 +159,13 @@
 
     if (result) {
       ElMessage.success("添加成功")
+      alarmLinkages.value = await getAlarmLinkages()
     }
   }
 
   const delCondition = async (key: string) => {
-    const ok = await ElMessageBox.confirm("确认删除告警??")
-    console.log(ok);
-
-    if (ok.value) {
+    const ok = await ElMessageBox.confirm("确认删除告警??").catch(() => false)
+    if (ok) {
       const result = await delAlarmLinkage(key)
       if (result) {
         ElMessage.success("删除成功")

@@ -338,8 +338,12 @@ export const setIoLabel = async (key: ioOut | ioIn, label: string, reverse: bool
  */
 export const addAlarmLinkage = async ({ key, condition, oprate }: Ec.alarmLinkage) => {
     const db = await useInject(Nedb)
-    return await db.alarmLinkage.update({ key }, { $set: { condition, oprate } }, { upsert: true })
-
+    await db.alarmLinkage.update({ key }, { $set: { condition, oprate } }, { upsert: true })
+    if (condition.name[0] === "DI") {
+        const ctx = await useInject(ecCtx)
+        await ctx.initIoAlarmLinkage()
+    }
+    return "ok"
 }
 
 /**
@@ -348,5 +352,11 @@ export const addAlarmLinkage = async ({ key, condition, oprate }: Ec.alarmLinkag
  */
 export const delAlarmLinkage = async (key: string) => {
     const db = await useInject(Nedb)
-    return await db.alarmLinkage.remove({ key })
+    const alarm = await db.alarmLinkage.findOne({ key })
+    await db.alarmLinkage.remove({ key })
+    if (alarm && alarm.condition.name[0] === "DI") {
+        const ctx = await useInject(ecCtx)
+        await ctx.initIoAlarmLinkage()
+    }
+    return "ok"
 }

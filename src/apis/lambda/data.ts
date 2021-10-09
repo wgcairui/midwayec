@@ -12,9 +12,10 @@ export const getAlarmLinkageConditionsOpts = async () => {
     const Opts = devs.map<Promise<CascaderOption>>(async dev => {
         const mountDev = dev.model
         const protocols = await db.protocols.findOne({ Protocol: dev.protocol })
+        const value = mountDev + dev.pid.toString().padStart(3, '0')
         return {
-            label: mountDev + dev.pid.toString().padStart(3, '0'),
-            value: mountDev,
+            label: value,
+            value,
             children: protocols.instruct.map(el => el.formResize.map(el2 => el2.name)).flat().map(name => ({ label: name, value: name }))
         }
     })

@@ -61,13 +61,29 @@ export class Sqlite {
         return this.db.exec(migration)
     }
 
+    /**
+     * 插入设备历史记录
+     * @param devid 设备id
+     * @param timeStamp 时间戳
+     * @param result 设备结果
+     * @returns 
+     */
     insert(devid: string, timeStamp: number, result: Uart.queryResultArgument[]) {
         // console.log({ devid, timeStamp, result });
         return this.sql.insert.run({ devid, timeStamp, result: JSON.stringify(result) })
     }
+
+    /**
+     * 获取设备记录
+     * @param devid 设备id
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @returns 
+     */
     all(devid: string, startTime: number, endTime: number): clientresult[] {
         return this.sql.select.all({ devid, startTime, endTime })
     }
+
     /**
      * 删除数据表中指定id的数据
      * @param devid 设备id
@@ -77,7 +93,10 @@ export class Sqlite {
         return this.VACUUM()
     }
 
-    /** 統計数据库大小,每个设备数据库条目数,最久时间 */
+    /** 
+     * 統計数据库大小,每个设备数据库条目数,最久时间 
+     * 
+     */
     async count() {
         const PdbSize = fs.promises.stat(this.dbname)
         //const count = this.sql.count.all({}) as {devid:string,'count(*)':number}[]

@@ -14,7 +14,8 @@ import { WsServer } from "./ws"
 import { gpioNumer, IO, IOs } from "./gpio"
 import { join } from "path"
 import { ioIn, ioOut } from "../../interface"
-import { BinaryValue } from "onoff"
+import { BinaryValue, Direction } from "onoff"
+import { Wifi } from "./wifi"
 
 
 /** server集中总线,挂载后台需要的数据库,工具,缓存,socket */
@@ -46,6 +47,9 @@ export class ecCtx {
 
     @Inject()
     IOs: IOs
+
+    @Inject()
+    Wifi: Wifi
 
     @Config("server")
     serverConfig: serverConfig
@@ -91,14 +95,14 @@ export class ecCtx {
         setInterval(async () => {
             this.WsServer.sendIosStat(await this.getIosStat())
         }, 1000)
-        /* 
-                this.getIo("o1").write(1).then(()=>{
-                    this.getIosStat().then(el => {
-                        console.log(el);
+
+        this.Wifi.scan().then(el => {
+            console.log(el);
+
+        }).catch(e=>{
+            console.log({e});
             
-                    })
-                })
-         */
+        })
 
     }
 
@@ -106,14 +110,59 @@ export class ecCtx {
      * 初始化io
      */
     async initIO() {
-        const i: gpioNumer[] = [16, 17, 18, 19, 20, 21]
-        const o: gpioNumer[] = [22, 23, 24, 25, 26, 27]
-        i.forEach((val, index) => {
-            this.ioMap.set(`i${index + 1}` as ioIn, this.IOs.getIo(val, "in"))
+        /**
+         * io输入
+         */
+        const i = (<gpioNumer[]>[16, 17, 18, 19, 20, 21]).map<{ port: gpioNumer, name: ioIn, type: Direction }>((val, index) => ({ port: val, name: `i${index + 1}` as ioIn, type: "in" }))
+        /**
+         * io输出
+         */
+        const o = (<gpioNumer[]>[22, 23, 24, 25, 26, 27]).map<{ port: gpioNumer, name: ioOut, type: Direction }>((val, index) => ({ port: val, name: `o${index + 1}` as ioOut, type: "out" }));
+
+        /**
+         * N.0
+         * 迭代输入输出,创建io
+         */
+        [...i, ...o].forEach(({ port, name, type }) => {
+            const io = this.IOs.getIo(port, type)
+            this.ioMap.set(name, io)
         })
-        o.forEach((val, index) => {
-            this.ioMap.set(`o${index + 1}` as ioOut, this.IOs.getIo(val, "out"))
+
+        /**
+         * N.1
+         * 获取io配置,初始化io
+         */
+        await this.Nedb.ios.find({}).then(ios => {
+            const ioSetupMap = new Map(ios.map(el => [el.name, el]));
+
+            /**
+             * 迭代all io,如果io有配置,加载配置
+             */
+            this.ioMap.forEach((io, key) => {
+                const setup = ioSetupMap.get(key)
+                if (setup) {
+                    io.loadInfo(setup)
+                }
+            })
         })
+
+        /**
+         * N.2
+         * 迭代输出,初始化状态(根据高低反转肯会打开Do)
+         */
+        o.forEach(({ name }) => {
+            const Do = this.ioMap.get(name)
+            Do.write(0).catch(e => console.log({ e }))
+        })
+
+        /**
+         * N.3
+         * 输出
+         */
+
+        this.initIoAlarmLinkage()
+
+
     }
 
     /**
@@ -122,6 +171,38 @@ export class ecCtx {
     async getIosStat() {
         const arr = await Promise.all([...this.ioMap.entries()].map(async ([key, val]) => ({ [key]: await val.read() })))
         return Object.assign({}, ...arr) as Record<ioIn | ioOut, BinaryValue>
+    }
+
+    /**
+     * 初始化告警联动配置
+     */
+    async initIoAlarmLinkage() {
+        /**
+         * 获取告警联动
+         */
+        await this.Nedb.alarmLinkage.find({}).then(alarms => {
+            /**
+         * 清除所有io的监听
+         */
+            this.ioMap.forEach(io => {
+                io.unwatchAll()
+            })
+            alarms
+                .filter(({ condition }) => condition.name[0] === "DI")
+                .forEach(({ condition, oprate }) => {
+                    const { name, operator, value } = condition
+                    const Di = this.ioMap.get(name[1] as any)!
+                    Di.watch((err, val) => {
+                        if (err) console.log({ err, condition });
+                        else {
+                            const Do = this.ioMap.get(oprate.name)!
+                            const b = eval(`${val}${operator}${value}`) as boolean
+                            // console.log({ err, val, name, b });
+                            Do.write(b ? oprate.value : Number(!Boolean(oprate.value)) as any)
+                        }
+                    })
+                })
+        })
     }
 
     /**
@@ -302,7 +383,7 @@ export class ecCtx {
                 else resolve({
                     timeStamp: Date.now(),
                     name: assign.name,
-                    path,
+                    path: `/${assign.name}.jpeg`,
                     out
                 })
             })

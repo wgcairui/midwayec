@@ -13,6 +13,7 @@ const protocol = () => import("./pages/manage/protocol.vue")
 const protocolInstruct = () => import("./pages/manage/protocolInstruct.vue")
 const serial = () => import("./pages/manage/serial.vue")
 const user = () => import("./pages/manage/user.vue")
+const wifi = () => import("./pages/manage/wifi.vue")
 
 const air = () => import("./pages/device/air.vue")
 const em = () => import("./pages/device/em.vue")
@@ -43,6 +44,12 @@ const routes: RouteRecordRaw[] = [
         component: alarm,
         name: "alarm",
         meta: { name: "告警设置" }
+    },
+    {
+        path: '/wifi',
+        component: wifi,
+        name: "wifi",
+        meta: { name: "wifi设置" }
     },
     {
         path: '/dataCount',

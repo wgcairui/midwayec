@@ -75,11 +75,10 @@
 </template>
 <script lang="ts" setup>
   import { computed, onMounted, reactive, ref, toRaw } from "vue";
-  import { CascaderOption } from "element-plus/lib/el-cascader-panel";
   import { getAlarmLinkageConditionsOpts, getAlarmLinkageOprates, getAlarmLinkages } from "../../apis/lambda/data"
   import { Ec } from "../../apis/interface";
   import { addAlarmLinkage, delAlarmLinkage } from "../../apis/lambda/setup";
-  import { ElMessage, ElMessageBox } from "element-plus";
+  import { CascaderOption, ElMessage, ElMessageBox } from "element-plus";
 
   /**
    * 条件

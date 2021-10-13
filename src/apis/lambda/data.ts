@@ -1,7 +1,7 @@
 
 import { useInject, useContext } from "@midwayjs/hooks"
+import { CascaderOption } from "element-plus"
 import { Nedb } from "../service/nedb"
-import { CascaderOption } from "element-plus/lib/el-cascader-panel";
 
 /**
  * 获取读取设备参数,构成
@@ -10,9 +10,8 @@ export const getAlarmLinkageConditionsOpts = async () => {
     const db = await useInject(Nedb)
     const devs = await db.binddevices.find({})
     const Opts = devs.map<Promise<CascaderOption>>(async dev => {
-        const mountDev = dev.model
         const protocols = await db.protocols.findOne({ Protocol: dev.protocol })
-        const value = mountDev + dev.pid.toString().padStart(3, '0')
+        const value = dev.alias
         return {
             label: value,
             value,
@@ -49,4 +48,13 @@ export const getAlarmLinkageOprates = async () => {
 export const getAlarmLinkages = async () => {
     const db = await useInject(Nedb)
     return await db.alarmLinkage.find({})
+}
+
+/**
+ * 获取设备列表
+ */
+export const getAlarmDevs = async () => {
+    const db = await useInject(Nedb)
+    const devs = await db.binddevices.find({})
+    return devs
 }

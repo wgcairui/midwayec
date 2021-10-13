@@ -10,48 +10,7 @@
         router
         style="display: flex;"
       >
-        <el-menu-item index="1" :route="{ name: 'index' }">LADS EC</el-menu-item>
-        <el-submenu index="1" style="margin-left: auto">
-          <template #title>
-            <i class="el-icon-set-up"></i>
-            <span>配置</span>
-          </template>
-          <el-menu-item-group>
-            <template #title>基础数据</template>
-            <el-menu-item index="1-1" :route="{ name: 'device' }">设备设置</el-menu-item>
-            <el-menu-item index="1-2" :route="{ name: 'ioManage' }">IO设置</el-menu-item>
-            <el-menu-item index="1-3" :route="{ name: 'serial' }">串口设置</el-menu-item>
-            <el-menu-item index="1-4" :route="{ name: 'protocol' }">协议管理</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="用户配置">
-            <el-menu-item index="1-10" :route="{ name: 'user' }">账号设置</el-menu-item>
-            <el-menu-item index="1-11" :route="{ name: 'alarm' }">告警设置</el-menu-item>
-            <el-menu-item index="1-12" :route="{ name: 'alarmLinkage' }">告警联动</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="环控管理">
-            <el-menu-item index="1-20" :route="{ name: 'dataCount' }">数据统计</el-menu-item>
-            <el-menu-item index="1-21" :route="{ name: 'PiInfo' }">环控信息</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="调试">
-            <el-menu-item index="1-30" :route="{ name: 'console' }">调试</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <!-- <el-submenu index="2">
-          <template #title>我的工作台</template>
-          <el-menu-item index="2-1">选项1</el-menu-item>
-          <el-menu-item index="2-2">选项2</el-menu-item>
-          <el-menu-item index="2-3">选项3</el-menu-item>
-          <el-submenu index="2-4">
-            <template #title>选项4</template>
-            <el-menu-item index="2-4-1">选项1</el-menu-item>
-            <el-menu-item index="2-4-2">选项2</el-menu-item>
-            <el-menu-item index="2-4-3">选项3</el-menu-item>
-          </el-submenu>
-        </el-submenu>
-        <el-menu-item index="3">消息中心</el-menu-item>
-        <el-menu-item index="4">
-          <a href="https://www.ele.me" target="_blank">订单管理</a>
-        </el-menu-item>-->
+        <el-menu-item index="0" :route="{ name: 'index' }">LADS EC</el-menu-item>
       </el-menu>
     </el-header>
     <el-container class="main">
@@ -69,6 +28,31 @@
             <i class="el-icon-s-fold"></i>
             <template #title>收起</template>
           </el-menu-item>
+          <el-sub-menu index="1">
+            <template #title>
+              <i class="el-icon-set-up"></i>
+              <span>配置</span>
+            </template>
+            <el-menu-item-group title="基础数据">
+              <el-menu-item index="1-1" :route="{ name: 'device' }">设备设置</el-menu-item>
+              <el-menu-item index="1-2" :route="{ name: 'ioManage' }">IO设置</el-menu-item>
+              <el-menu-item index="1-3" :route="{ name: 'serial' }">串口设置</el-menu-item>
+              <el-menu-item index="1-4" :route="{ name: 'protocol' }">协议管理</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="用户配置">
+              <el-menu-item index="1-10" :route="{ name: 'user' }">账号设置</el-menu-item>
+              <el-menu-item index="1-11" :route="{ name: 'alarm' }">告警设置</el-menu-item>
+              <el-menu-item index="1-12" :route="{ name: 'alarmLinkage' }">告警联动</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="环控管理">
+              <el-menu-item index="1-20" :route="{ name: 'dataCount' }">数据统计</el-menu-item>
+              <el-menu-item index="1-21" :route="{ name: 'PiInfo' }">环控信息</el-menu-item>
+              <el-menu-item index="1-21" :route="{ name: 'wifi' }">wifi配置</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="调试">
+              <el-menu-item index="1-30" :route="{ name: 'console' }">调试</el-menu-item>
+            </el-menu-item-group>
+          </el-sub-menu>
           <el-menu-item index="6" :route="{ name: 'home' }">
             <i class="el-icon-s-home"></i>
             <template #title>状态</template>
@@ -107,7 +91,6 @@
     ref
   } from "vue";
   import { useStore } from "vuex";
-  import { PiDevInfo } from "./apis/lambda/setup";
   import { key } from "./vuex";
   export default defineComponent({
     setup() {
@@ -148,7 +131,7 @@
   });
 </script>
 
-<style>
+<style lang="scss">
   html {
     font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
       Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -169,36 +152,43 @@
     max-height: 100vh;
   }
 
-  .main {
-    height: calc(100vh - 60px);
+  .el-header {
+    padding: 0 !important;
+  }
+  .el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 200px;
+    overflow-y: auto;
+    border-right: none;
   }
 
-  .nav-items {
-    width: 15%;
-    margin: 0;
-    padding: 0;
-    padding: 1rem 2rem;
+  .main {
+    height: calc(100vh - 60px);
+
+    aside {
+      background-color: #545c64;
+    }
+
+    .nav-items {
+      width: 15%;
+      margin: 0;
+      padding: 0;
+      padding: 1rem 2rem;
+      li {
+        list-style: none;
+        margin: 0;
+        font-size: 1rem;
+        padding: 0.5rem;
+        word-wrap: normal;
+      }
+    }
   }
 
   .item * {
     color: #fff;
   }
 
-  .nav-items > li {
-    list-style: none;
-    margin: 0;
-    font-size: 1rem;
-    padding: 0.5rem;
-    word-wrap: normal;
-  }
-
   .navbar-nav > li {
     margin-right: 0.5rem;
-  }
-
-  .item-statu > p {
-    margin: 0;
-    margin-bottom: 0.5rem;
   }
 
   *,
@@ -208,44 +198,7 @@
     margin: 0;
   }
 
-  .button--green {
-    display: inline-block;
-    border-radius: 4px;
-    border: 1px solid #3b8070;
-    color: #3b8070;
-    text-decoration: none;
-    padding: 10px 30px;
-  }
-
-  .button--green:hover {
-    color: #fff;
-    background-color: #3b8070;
-  }
-
-  .button--grey {
-    display: inline-block;
-    border-radius: 4px;
-    border: 1px solid #35495e;
-    color: #35495e;
-    text-decoration: none;
-    padding: 10px 30px;
-    margin-left: 15px;
-  }
-
-  .button--grey:hover {
-    color: #fff;
-    background-color: #35495e;
-  }
-  .el-header {
-    padding: 0 !important;
-  }
-  .el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 150px;
-    overflow-y: auto;
-    border-right: none;
-  }
-
-  aside {
-    background-color: #545c64;
+  ::-webkit-scrollbar {
+    display: none; /* Chrome Safari */
   }
 </style>

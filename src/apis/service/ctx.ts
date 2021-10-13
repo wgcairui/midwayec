@@ -96,14 +96,6 @@ export class ecCtx {
             this.WsServer.sendIosStat(await this.getIosStat())
         }, 1000)
 
-        this.Wifi.scan().then(el => {
-            console.log(el);
-
-        }).catch(e=>{
-            console.log({e});
-            
-        })
-
     }
 
     /**

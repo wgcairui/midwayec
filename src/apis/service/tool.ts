@@ -39,7 +39,12 @@ export class Tool {
      */
     async osNet() {
         const info = await networkInterfaces()
-        return pick(info.find(el => el.iface === 'en0') || info[1], ["ip4", "ip4subnet", "ip6", "ip6subnet", "mac"])
+        const l = info.find(el => el.iface === 'eth0')
+        const w = info.find(el => el.iface === 'wlan0')
+        return {
+            lan: l ? pick(l, ["ip4", "ip4subnet", "ip6", "ip6subnet", "mac"]) : null,
+            wifi: w ? pick(w, ["ip4", "ip4subnet", "ip6", "ip6subnet", "mac"]) : null
+        }
     }
 
     /**
@@ -58,12 +63,13 @@ export class Tool {
     async osDevs() {
         const disk = await this.osDisk()
         const men = await this.osMemory()
-        const net = await this.osNet()
+        const { lan, wifi } = await this.osNet()
         const getway = await this.osGetway()
         return {
             disk,
             men,
-            net,
+            net: lan,
+            wifi,
             getway
         }
     }

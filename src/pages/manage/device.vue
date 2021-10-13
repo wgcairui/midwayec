@@ -65,12 +65,7 @@
       <el-table-column prop="model" label="设备型号" width="200"></el-table-column>
       <el-table-column prop="pid" label="pid" width="50"></el-table-column>
       <el-table-column prop="protocol" label="协议"></el-table-column>
-      <el-table-column
-        prop="uart"
-        label="串口"
-        width="120"
-        :formatter="uartFormat"
-      ></el-table-column>
+      <el-table-column prop="uart" label="串口" width="120" :formatter="uartFormat"></el-table-column>
       <el-table-column prop="alias" label="设备别名" width="150"></el-table-column>
       <el-table-column fixed="right" label="操作" width="180">
         <template v-slot="row">
@@ -81,11 +76,9 @@
   </main>
 </template>
 
-<script lang="ts">
-  import { ElMessageBox } from "element-plus";
-  import { CascaderOption } from "element-plus/lib/el-cascader-panel";
+<script lang="ts" setup>
+  import { CascaderOption, ElMessageBox } from "element-plus";
   import {
-    defineComponent,
     onMounted,
     reactive,
     ref
@@ -93,87 +86,73 @@
   import { Ec } from "../../apis/interface";
   import { addMountdev, delMountdev, getBindDevs, getDevices } from "../../apis/lambda/setup";
   import { uarts } from "../../universalData"
-  export default defineComponent({
-    setup() {
-      const uartMaps = new Map(uarts.map(el => [el.value, el.text]))
-      const device = reactive<Ec.Mountdev>({
-        uart: "/dev/ttyAMA0",
-        type: "UPS",
-        model: "",
-        pid: 0,
-        protocol: "",
-        alias: "",
-      });
-      const p = ref<string[]>([]);
-      const bindDevs = ref<Ec.Mountdev[]>([]);
-      const bindDevsFecth = async () => {
-        bindDevs.value = await getBindDevs();
-      }
-
-      // 添加绑定设备
-      const addMountdevs = () => {
-        const [type, model, protocol] = p.value;
-        device.type = type;
-        device.model = model;
-        device.protocol = protocol;
-        device.alias = device.alias || device.model;
-        addMountdev(device).then(() => {
-          device.type = "";
-          device.model = "";
-          device.pid = 0;
-          device.protocol = "";
-          device.alias = "";
-          p.value = [];
-          bindDevsFecth();
-        });
-      };
-      // 删除绑定设备
-      const delMountdevs = (row: any) => {
-        ElMessageBox.confirm(`确定删除协议:${row.row.protocol} ?`).then((val) => {
-          if (val === "confirm") {
-            delMountdev(row.row._id!).then(() => {
-              bindDevsFecth;
-            });
-          }
-        });
-      };
-      //
-      const Model = ref<CascaderOption[]>()
-
-      onMounted(async () => {
-        bindDevsFecth()
-        const devs = await getDevices();
-        const types = [...new Set(devs.map((el) => el.Type))];
-        Model.value = types.map<CascaderOption>((type) => {
-          const children = devs
-            .filter((el) => el.Type === type)
-            .map((el) => {
-              const ch2 = el.Protocols.map((el2) => ({
-                value: el2.Protocol,
-                label: el2.Protocol,
-              }));
-              return { value: el.DevModel, children: ch2, label: el.DevModel };
-            });
-          return {
-            value: type,
-            label: type,
-            children,
-          };
-        });
-      })
-
-      const uartFormat = (row: Ec.Mountdev) => uartMaps.get(row.uart)
-
-      return {
-        uarts,
-        device,
-        bindDevs,
-        addMountdevs,
-        delMountdevs,
-        Model,
-        p,
-        uartFormat
-      };
-    },
+  const uartMaps = new Map(uarts.map(el => [el.value, el.text]))
+  const device = reactive<Ec.Mountdev>({
+    uart: "/dev/ttyAMA0",
+    type: "UPS",
+    model: "",
+    pid: 0,
+    protocol: "",
+    alias: "",
   });
+  const p = ref<string[]>([]);
+  const bindDevs = ref<Ec.Mountdev[]>([]);
+  const bindDevsFecth = async () => {
+    bindDevs.value = await getBindDevs();
+  }
+
+  // 添加绑定设备
+  const addMountdevs = () => {
+    const [type, model, protocol] = p.value;
+    device.type = type;
+    device.model = model;
+    device.protocol = protocol;
+    device.alias = device.alias || device.model;
+    addMountdev(device).then(() => {
+      device.type = "";
+      device.model = "";
+      device.pid = 0;
+      device.protocol = "";
+      device.alias = "";
+      p.value = [];
+      bindDevsFecth();
+    });
+  };
+  // 删除绑定设备
+  const delMountdevs = (row: any) => {
+    ElMessageBox.confirm(`确定删除协议:${row.row.protocol} ?`).then((val) => {
+      if (val === "confirm") {
+        delMountdev(row.row._id!).then(() => {
+          bindDevsFecth;
+        });
+      }
+    });
+  };
+  //
+  const Model = ref<CascaderOption[]>()
+
+  onMounted(async () => {
+    bindDevsFecth()
+    const devs = await getDevices();
+    const types = [...new Set(devs.map((el) => el.Type))];
+    Model.value = types.map<CascaderOption>((type) => {
+      const children = devs
+        .filter((el) => el.Type === type)
+        .map((el) => {
+          const ch2 = el.Protocols.map((el2) => ({
+            value: el2.Protocol,
+            label: el2.Protocol,
+          }));
+          return { value: el.DevModel, children: ch2, label: el.DevModel };
+        });
+      return {
+        value: type,
+        label: type,
+        children,
+      };
+    });
+  })
+
+  const uartFormat = (row: Ec.Mountdev) => uartMaps.get(row.uart)
+
 </script>

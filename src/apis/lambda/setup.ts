@@ -7,7 +7,6 @@ import { Nedb } from "../service/nedb"
 import { ProtocolParse } from "../service/parse"
 import { Sqlite } from "../service/sqlite"
 import { Tool } from "../service/tool"
-import * as fs from "fs"
 import { ioIn, ioOut } from "../../interface"
 
 /**
@@ -359,4 +358,50 @@ export const delAlarmLinkage = async (key: string) => {
         await ctx.initIoAlarmLinkage()
     }
     return "ok"
+}
+
+/**
+ * 获取wifi列表
+ * @returns 
+ */
+export const wifiScan = async () => {
+    const ctx = await useInject(ecCtx)
+    return await ctx.Wifi.getCurrentConnections()
+}
+
+/**
+ * 连接到wifi
+ * @param ssid 
+ * @param password 
+ * @returns 
+ */
+export const wifiConnect = async (ssid: string, password: string) => {
+    const ctx = await useInject(ecCtx)
+    return await ctx.Wifi.connect(ssid, password)
+        .then(() => "ok")
+        .catch(e => {
+            console.log(e.message);
+            return e
+        })
+}
+
+/**
+ * 删除wifi
+ * @param ssid 
+ * @returns 
+ */
+export const wifiDleteConnection = async (ssid: string) => {
+    const ctx = await useInject(ecCtx)
+    const result = await ctx.Wifi.deleteConnection(ssid)
+        .then(() => "ok")
+        .catch(async e => 'error')
+    if (result === "ok") return result
+    else {
+        for (let i = 0; i < 100; i++) {
+            const d = await ctx.Wifi.deleteConnection(`${ssid} ${i}`)
+                .then(() => "ok")
+                .catch(async e => 'error')
+            if (d === "ok") return d
+        }
+    }
 }

@@ -63,8 +63,8 @@
         </el-descriptions-item>
       </el-descriptions>
     </el-card>
-    <el-card>
-      <el-descriptions v-if="info.net" title="网络信息">
+    <el-card v-if="info.net ">
+      <el-descriptions title="网络信息">
         <el-descriptions-item label="IPV4">
           <el-tag>{{ info.net.ip4 }}</el-tag>
         </el-descriptions-item>
@@ -79,6 +79,28 @@
         </el-descriptions-item>
         <el-descriptions-item label="MAc">
           <el-tag>{{ info.net.mac }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="网关">
+          <el-tag>{{ info.getway }}</el-tag>
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-card>
+    <el-card v-if="info.wifi">
+      <el-descriptions title="Wifi信息">
+        <el-descriptions-item label="IPV4">
+          <el-tag>{{ info.wifi.ip4 }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="IPV4掩码">
+          <el-tag>{{ info.wifi.ip4subnet }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="IPV6">
+          <el-tag>{{ info.wifi.ip4 }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="IPV6掩码">
+          <el-tag>{{ info.wifi.ip6subnet }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="MAc">
+          <el-tag>{{ info.wifi.mac }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="网关">
           <el-tag>{{ info.getway }}</el-tag>

@@ -1,4 +1,5 @@
-import { MessageBoxInputData } from "element-plus/lib/el-message-box/src/message-box.type";
+
+import { MessageBoxInputData } from "element-plus";
 import { OpenOptions } from "serialport";
 import { ioIn, ioOut } from "../interface"
 

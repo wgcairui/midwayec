@@ -4,7 +4,7 @@
       <el-form :model="serial" label-width="80px">
         <el-form-item label="串口:">
           <el-select v-model="serial.serialport">
-            <el-option v-for="port in serialports" :key="port" :value="port"></el-option>
+            <el-option v-for="port in serialports" :key="port.text" :value="port.value" :label="port.text"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="自动打开:">
@@ -45,9 +45,8 @@
     </el-table>
   </main>
 </template>
-<script lang="ts">
+<script lang="ts" setup>
   import {
-    defineComponent,
     onMounted,
     reactive,
     ref
@@ -55,68 +54,62 @@
   import { Ec } from "../../apis/interface";
   import { addSerialport, getBindSerials, getSerialportlist } from "../../apis/lambda/setup";
   import { uarts } from "../../universalData"
-  export default defineComponent({
-    setup() {
-      const uartMaps = new Map(uarts.map(el => [el.value, el.text]))
+  const uartMaps = new Map(uarts.map(el => [el.value, el.text]))
 
-      const serial = reactive<Ec.BindSerial & { interval: number }>({
-        serialport: "/dev/ttyAMA0",
-        autoOpen: true,
-        baudRate: 9600,
-        dataBits: 8,
-        stopBits: 1,
-        parity: "none",
-        interval: 100,
-      });
-
-      const selects = {
-        baudRate: [
-          115200,
-          57600,
-          38400,
-          19200,
-          9600,
-          4800,
-          2400,
-          1800,
-          1200,
-          600,
-          300,
-          200,
-          150,
-          134,
-          110,
-          75,
-          50,
-        ],
-        dataBits: [8, 7, 6, 5],
-        stopBits: [1, 2],
-        parity: ["none", "even", "mark", "odd", "space"],
-      };
-
-      const BindSerials = ref<Ec.BindSerial[]>([]);
-
-      const serialports = ref<string[]>([]);
-
-      const fecthBindSerials = async () => {
-        BindSerials.value = await getBindSerials();
-      }
-
-      onMounted(() => {
-        getSerialportlist().then(el => {
-          serialports.value = el
-        })
-
-        fecthBindSerials()
-      })
-
-      const addSerialports = () => {
-        addSerialport({ ...serial }).then(() => fecthBindSerials());
-      };
-
-      const uartFormat = (row: Ec.BindSerial) => uartMaps.get(row.serialport)
-
-      return { serial, selects, serialports, BindSerials, addSerialports, uartFormat };
-    },
+  const serial = reactive<Ec.BindSerial & { interval: number }>({
+    serialport: "/dev/ttyAMA0",
+    autoOpen: true,
+    baudRate: 9600,
+    dataBits: 8,
+    stopBits: 1,
+    parity: "none",
+    interval: 100,
   });
+
+  const selects = {
+    baudRate: [
+      115200,
+      57600,
+      38400,
+      19200,
+      9600,
+      4800,
+      2400,
+      1800,
+      1200,
+      600,
+      300,
+      200,
+      150,
+      134,
+      110,
+      75,
+      50,
+    ],
+    dataBits: [8, 7, 6, 5],
+    stopBits: [1, 2],
+    parity: ["none", "even", "mark", "odd", "space"],
+  };
+
+  const BindSerials = ref<Ec.BindSerial[]>([]);
+
+  const serialports = ref<{ text: string, value: string }[]>([]);
+
+  const fecthBindSerials = async () => {
+    BindSerials.value = await getBindSerials();
+  }
+
+  onMounted(() => {
+    getSerialportlist().then(el => {
+      serialports.value = el.map(port => ({ text: uartMaps.get(port) || port, value: port }))
+    })
+
+    fecthBindSerials()
+  })
+
+  const addSerialports = () => {
+    addSerialport({ ...serial }).then(() => fecthBindSerials());
+  };
+
+  const uartFormat = (row: Ec.BindSerial) => uartMaps.get(row.serialport)
 </script>

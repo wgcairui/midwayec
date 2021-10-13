@@ -16,6 +16,7 @@ declare module 'node-wifi' {
   type WifiCallback<T = any> = (err: Error | null | undefined, value: T) => void
 
   export interface networks {
+    active?: string
     ssid: string
     bssid: string
     mac: string // equals to bssid (for retrocompatibility)

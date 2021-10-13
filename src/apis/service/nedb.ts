@@ -22,7 +22,7 @@ export class Nedb {
     /** 布局信息 */
     layouts: nedbPromise
     /** 告警配置 */
-    alarmsetups: nedbPromise
+    alarmsetups: nedbPromise<Pick<Uart.ProtocolConstantThreshold, "ShowTag" | "Threshold"> & { AlarmStat: Pick<Uart.ConstantAlarmStat, "alarmStat" | "name">[] } & { devId: string }>
     /** 聚合设备配置 */
     aggregations: nedbPromise
     /** 协议信息 */

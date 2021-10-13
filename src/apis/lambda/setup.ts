@@ -405,3 +405,46 @@ export const wifiDleteConnection = async (ssid: string) => {
         }
     }
 }
+
+/**
+ * 更新用户告警配置-显示参数
+ * @param devId 设备id
+ * @param ShowTag 
+ * @returns 
+ */
+export const updateConstantShowTag = async (devId: string, ShowTag: string[]) => {
+    const db = await useInject(Nedb)
+    return await db.alarmsetups.update({ devId }, { $set: { ShowTag } }, { upsert: true })
+}
+
+/**
+ * 更新用户告警配置-状态
+ * @param devId 设备id
+ * @param ShowTag 
+ * @returns 
+ */
+export const updateConstantAlarmStatu = async (devId: string, AlarmStat: (Pick<Uart.ConstantAlarmStat, "alarmStat" | "name">)[]) => {
+    const db = await useInject(Nedb)
+    return await db.alarmsetups.update({ devId }, { $set: { AlarmStat } }, { upsert: true })
+}
+
+/**
+ * 更新用户告警配置-阈值
+ * @param devId 设备id
+ * @param ShowTag 
+ * @returns 
+ */
+export const updateConstantThreshold = async (devId: string, Threshold: Uart.Threshold[]) => {
+    const db = await useInject(Nedb)
+    return await db.alarmsetups.update({ devId }, { $set: { Threshold } }, { upsert: true })
+}
+
+/**
+ * 获取指定设备告警配置
+ * @param devId 
+ * @returns 
+ */
+export const getUserConstant = async (devId: string) => {
+    const db = await useInject(Nedb)
+    return await db.alarmsetups.findOne({ devId })
+}

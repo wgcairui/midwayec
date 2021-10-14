@@ -280,7 +280,7 @@ export const initSetup = async () => {
  */
 export const getCarema = async (opt?: cameraOption) => {
     const ctx = await useInject(ecCtx)
-    return await ctx.carema(opt)
+    return await ctx.carema(opt).catch(e=>e)
 }
 
 /**
@@ -302,7 +302,11 @@ export const getVideo = async (opt?: videoOption) => {
 export const setIoVal = async (key: ioOut, val: 0 | 1) => {
     const ctx = await useInject(ecCtx)
     const io = ctx.getIo(key)
-    return await io.write(val).then(() => io.readSync())
+    await io.write(val)
+    setTimeout(async () => {
+        ctx.WsServer.sendIosStat(await ctx.getIosStat())
+    }, 100);
+    return io.readSync()
 }
 
 /**

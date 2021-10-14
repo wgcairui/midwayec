@@ -11,7 +11,8 @@ export default defineConfig({
         /* ws: true,
         changeOrigin: true */
       }
-    }
+    },
+    open: true
   },
   plugins: [hooks(), vue()],
 });

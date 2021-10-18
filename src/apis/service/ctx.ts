@@ -17,6 +17,8 @@ import { ioIn, ioOut } from "../../interface"
 import { BinaryValue, Direction } from "onoff"
 import { Wifi } from "./wifi"
 
+import { EventEmitter } from "events"
+
 
 /** server集中总线,挂载后台需要的数据库,工具,缓存,socket */
 @Provide()
@@ -77,6 +79,10 @@ export class ecCtx {
 
     @Init()
     async init() {
+        // 把node全局事件对象默认监听数修改为20
+        EventEmitter.defaultMaxListeners = 20
+
+
         this.consoleMode = false
         this.serials = new Map()
         this.serialTimeout = []
@@ -286,7 +292,7 @@ export class ecCtx {
             // 如果是调试模式则取消继续轮询
             if (this.consoleMode) return
             this.startSerialQuery(dev, serial, protocol)
-        }, 1000)
+        }, 500)
         const uartN = dev.uart[dev.uart.length - 1]
         this.serialTimeout[parseInt(uartN)] = n
     }

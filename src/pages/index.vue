@@ -13,6 +13,7 @@
   </main>
 </template>
 <script lang="ts" setup>
+  import { ElMessageBox } from "element-plus";
   import { onMounted, ref } from "vue";
   import { getCarema } from "../apis/lambda/setup";
 
@@ -24,8 +25,13 @@
      * 拍摄一张照片
      */
     getCarema({ name: 'screen' }).then(el => {
-      url.value = el.path
-      urlList.value[0] = el.path
+      if ("cmd" in el) {
+        ElMessageBox.alert(el.cmd)
+      } else {
+        url.value = el.path
+        urlList.value[0] = el.path
+      }
+
     })
   })
 
@@ -34,8 +40,8 @@
   .ec-statu {
     width: 100%;
     height: 400px;
-    .el-card{
-        height: 100%;
+    .el-card {
+      height: 100%;
     }
   }
 </style>

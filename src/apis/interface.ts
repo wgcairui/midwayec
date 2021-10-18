@@ -204,6 +204,16 @@ export declare namespace Ec {
         oprate: alarmLinkageOprate
     }
 
+    /**
+     * exec指令返回错误
+     */
+    interface execError {
+        cmd: string
+        code: number
+        killed: boolean
+        signal: any
+    }
+
 }
 
 export interface wsMessege<T = any> {

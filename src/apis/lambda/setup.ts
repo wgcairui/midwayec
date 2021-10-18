@@ -280,7 +280,7 @@ export const initSetup = async () => {
  */
 export const getCarema = async (opt?: cameraOption) => {
     const ctx = await useInject(ecCtx)
-    return await ctx.carema(opt).catch(e=>e)
+    return await ctx.carema(opt).catch((e: Ec.execError) => e)
 }
 
 /**

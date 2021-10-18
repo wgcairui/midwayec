@@ -47,7 +47,7 @@
             <el-menu-item-group title="环控管理">
               <el-menu-item index="1-20" :route="{ name: 'dataCount' }">数据统计</el-menu-item>
               <el-menu-item index="1-21" :route="{ name: 'PiInfo' }">环控信息</el-menu-item>
-              <el-menu-item index="1-21" :route="{ name: 'wifi' }">wifi配置</el-menu-item>
+              <el-menu-item index="1-22" :route="{ name: 'wifi' }">wifi配置</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="调试">
               <el-menu-item index="1-30" :route="{ name: 'console' }">调试</el-menu-item>

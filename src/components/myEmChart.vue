@@ -101,8 +101,7 @@
           t.push(...Thread.map(el => ({ ...resultMap.get(el.name)!, ...el })))
         }
 
-        console.log({ v, c, f, t });
-
+        // console.log({ v, c, f, t });
         return { v, c, f, t }
       })
 

@@ -28,7 +28,7 @@
       <el-table-column prop="uart" label="串口"></el-table-column>
       <el-table-column prop="n" label="数据行数"></el-table-column>
       <el-table-column prop="time" label="开始记录"></el-table-column>
-      <el-table-column label=" 操作">
+      <el-table-column label=" 操作" align="center">
         <template v-slot="row">
           <el-button type="warning" @click="deleteColumn(row)" size="small">删除</el-button>
         </template>

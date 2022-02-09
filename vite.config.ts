@@ -12,7 +12,8 @@ export default defineConfig({
         changeOrigin: true */
       }
     },
-    open: true
+    open: true,
+    port: 7100
   },
   plugins: [hooks(), vue()],
 });

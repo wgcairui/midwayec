@@ -3,7 +3,7 @@ const { Bootstrap } = require('@midwayjs/bootstrap');
 
 const web = new Framework().configure({
   hostname: "0.0.0.0",
-  port: process.env.NODE_PORT ? Number(process.env.NODE_PORT) : 7100,
+  port: process.env.NODE_PORT ? Number(process.env.NODE_PORT) : 7001,
 });
 
 Bootstrap.load(web)
